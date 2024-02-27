@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <time.h>
 #include <cstdlib>
-#include <papi.h>
 
 using namespace std;
 
@@ -21,7 +20,7 @@ void OnMult(int m_ar, int m_br)
 
 	double *pha, *phb, *phc;
 		
-    	pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
+    pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
 
@@ -117,14 +116,48 @@ void OnMultLine(int m_ar, int m_br)
     free(phc);
 }
 
-void get_sub_matrix(int starting_i, int starting_j, double* ret, int ret_size, double* large_matrix, int large_size){
-	for(i=0; i<m_ar; i++) {
-		for(j=0; j<m_br; j++) {	
-			ret[i*ret_size + j] = large_matrix[(starting_i+i)*large_size+(starting_j+j)]
+void main_to_sub_matrix(int starting_i, int starting_j, double* large_matrix, int large_size, double* ret, int ret_size){
+	for(int i=0; i<ret_size; i++) {
+		for(int j=0; j<ret_size; j++) {	
+			ret[i*ret_size + j] = large_matrix[(starting_i+i)*large_size+(starting_j+j)];
 		}
 	}
 }
 
+void sub_to_main_matrix(int starting_i, int starting_j, double* large_matrix, int large_size, double* ret, int ret_size){
+	for(int i=0; i<ret_size; i++) {
+		for(int j=0; j<ret_size; j++) {	
+			large_matrix[(starting_i+i)*large_size+(starting_j+j)] = ret[i*ret_size + j];
+		}
+	}
+}
+
+void multiply_square_matrix(double *m1, double *m2, double *res, int size) {
+	for(int i=0; i<size; i++) {
+		for(int k=0; k<size; k++) {
+			for(int j=0; j<size; j++) {	
+				res[i*size+j] += m1[i*size+k] * m2[k*size+j];
+			}
+		}
+	}
+}
+
+void add_square_matrix(double *m1, double *m2, double *res, int size) {
+	for(int i=0; i<size; i++) {
+		for(int j=0; j<size; j++) {	
+			res[i*size+j] = m1[i*size+j] + m2[i*size+j];
+		}
+	}
+}
+
+void print_square_matrix(double *m, int size) {
+	for(int i=0; i<size; i++) {
+		for(int j=0; j<size; j++) {	
+			cout << m[i*size+j] << " ";
+		}
+		cout << endl;
+	}
+}
 
 void OnMultBlock(int m_ar, int m_br, int bkSize)
 {
@@ -134,7 +167,7 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 	double temp;
 	int i, j, k, numberOfBlocks, i2, j2, k2;
 
-	double *pha, *phb, *phc, *temp1, *temp2;
+	double *pha, *phb, *phc, *temp1, *temp2, *temp3, *temp4;
 		
     pha = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	phb = (double *)malloc((m_ar * m_ar) * sizeof(double));
@@ -143,6 +176,8 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 
 	temp1 = (double *)malloc((bkSize * bkSize) * sizeof(double));
 	temp2 = (double *)malloc((bkSize * bkSize) * sizeof(double));
+	temp3 = (double *)malloc((bkSize * bkSize) * sizeof(double));
+	temp4 = (double *)malloc((bkSize * bkSize) * sizeof(double));
 
 	for(i=0; i<m_ar; i++)
 		for(j=0; j<m_ar; j++)
@@ -158,15 +193,18 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 	for(i=0; i<m_ar; i+=bkSize) {
 		for(k=0; k<m_ar; k+=bkSize) {
 			for(j=0; j<m_ar; j+=bkSize) {	
+				// phc[i*m_ar+j] += pha[i*m_ar+k] * phb[k*m_br+j];
+				main_to_sub_matrix(i, j, phc, m_ar, temp1, bkSize);
+				main_to_sub_matrix(i, k, pha, m_ar, temp2, bkSize);
+				main_to_sub_matrix(k, j, phb, m_ar, temp3, bkSize);
 
-				for(i2=i; i2<bkSize; i2++) {
-					for(k2=0; k2<bkSize; k2++) {
-						for(j2=j; j2<bkSize; j2++) {	
-							phc[i2*m_ar+j2] += pha[i2*m_ar+k2] * phb[k2*m_br+j2];
-						}
-					}
-				}
+				fill_n(temp4, bkSize * bkSize, 0);
+				multiply_square_matrix(temp2, temp3, temp4, bkSize);
 
+				fill_n(temp2, bkSize * bkSize, 0);
+				add_square_matrix(temp1, temp4, temp2, bkSize);
+
+				sub_to_main_matrix(i, j, phc, m_ar, temp2, bkSize);
 			}
 		}
 	}
