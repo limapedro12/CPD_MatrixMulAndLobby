@@ -3,6 +3,7 @@
 #include <iomanip>
 #include <time.h>
 #include <cstdlib>
+#include <papi.h>
 
 using namespace std;
 
