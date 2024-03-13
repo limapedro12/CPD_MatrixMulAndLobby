@@ -4,7 +4,7 @@
 #include <time.h>
 #include <cstdlib>
 #include <papi.h>
-
+#include <chrono>
 
 
 using namespace std;
@@ -40,7 +40,7 @@ void OnMultLine1(int m_ar, int m_br)
 			phb[i*m_br + j] = (double)(i+1);
 
     
-	Time1 = clock();
+	const auto start{std::chrono::steady_clock::now()};
 
     #pragma omp parallel for
 	for(i=0; i<m_ar; i++) {
@@ -51,9 +51,10 @@ void OnMultLine1(int m_ar, int m_br)
 		}
 	}
 
-    Time2 = clock();
+    const auto end{std::chrono::steady_clock::now()};
+    const std::chrono::duration<double> elapsed_seconds{end - start};
 
-	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
+	sprintf(st, "Time: %3.3f seconds\n", elapsed_seconds);
 	cout << st;
 
 
@@ -96,7 +97,7 @@ void OnMultLine2(int m_ar, int m_br)
 			phb[i*m_br + j] = (double)(i+1);
 
     
-	Time1 = clock();
+	const auto start{std::chrono::steady_clock::now()};
 
     #pragma omp parallel
 	for(i=0; i<m_ar; i++) {
@@ -108,11 +109,11 @@ void OnMultLine2(int m_ar, int m_br)
 		}
 	}
 
-    Time2 = clock();
+        const auto end{std::chrono::steady_clock::now()};
+        const std::chrono::duration<double> elapsed_seconds{end - start};
 
-	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
+	sprintf(st, "Time: %3.3f seconds\n", elapsed_seconds);
 	cout << st;
-
 
 	cout << "Result matrix: " << endl;
 	for(i=0; i<1; i++)
