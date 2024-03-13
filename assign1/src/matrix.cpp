@@ -8,7 +8,6 @@
 using namespace std;
 
 #define SYSTEMTIME clock_t
-
  
 void OnMult(int m_ar, int m_br) 
 {
@@ -64,7 +63,6 @@ void OnMult(int m_ar, int m_br)
     free(phc);
 }
 
-
 void OnMultLine(int m_ar, int m_br)
 {
 	SYSTEMTIME Time1, Time2;
@@ -103,7 +101,6 @@ void OnMultLine(int m_ar, int m_br)
 
 	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
 	cout << st;
-
 
 	cout << "Result matrix: " << endl;
 	for(i=0; i<1; i++)
@@ -193,8 +190,7 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 	Time1 = clock();
 	for(i=0; i<m_ar; i+=bkSize) {
 		for(k=0; k<m_ar; k+=bkSize) {
-			for(j=0; j<m_ar; j+=bkSize) {	
-				// phc[i*m_ar+j] += pha[i*m_ar+k] * phb[k*m_br+j];
+			for(j=0; j<m_ar; j+=bkSize) {
 				main_to_sub_matrix(i, j, phc, m_ar, temp1, bkSize);
 				main_to_sub_matrix(i, k, pha, m_ar, temp2, bkSize);
 				main_to_sub_matrix(k, j, phb, m_ar, temp3, bkSize);
@@ -214,7 +210,6 @@ void OnMultBlock(int m_ar, int m_br, int bkSize)
 
 	sprintf(st, "Time: %3.3f seconds\n", (double)(Time2 - Time1) / CLOCKS_PER_SEC);
 	cout << st;
-
 
 	cout << "Result matrix: " << endl;
 	for(i=0; i<1; i++)
@@ -247,10 +242,6 @@ void init_papi() {
             << " REVISION: " << PAPI_VERSION_REVISION(retval) << "\n";
 }
 
-
-
-
-
 int main (int argc, char *argv[])
 {
 	char c;
@@ -268,8 +259,7 @@ int main (int argc, char *argv[])
 
 
 	ret = PAPI_create_eventset(&EventSet);
-		if (ret != PAPI_OK) cout << "ERROR: create eventset" << endl;
-
+	if (ret != PAPI_OK) cout << "ERROR: create eventset" << endl;
 
 	ret = PAPI_add_event(EventSet,PAPI_L1_DCM );
 	if (ret != PAPI_OK) cout << "ERROR: PAPI_L1_DCM" << endl;
@@ -379,9 +369,6 @@ int main (int argc, char *argv[])
 				break;
 
 		}
-
-
-
 	} while (op != 0);
 
 	ret = PAPI_remove_event( EventSet, PAPI_L1_DCM );
@@ -407,6 +394,4 @@ int main (int argc, char *argv[])
 	ret = PAPI_destroy_eventset( &EventSet );
 	if ( ret != PAPI_OK )
 		std::cout << "FAIL destroy" << endl;
-
 }
-

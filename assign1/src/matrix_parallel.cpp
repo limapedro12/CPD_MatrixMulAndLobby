@@ -6,13 +6,9 @@
 #include <papi.h>
 #include <chrono>
 
-
 using namespace std;
 
 #define SYSTEMTIME clock_t
-
-
-
 
 void OnMultLine1(int m_ar, int m_br)
 {
@@ -29,8 +25,6 @@ void OnMultLine1(int m_ar, int m_br)
 	phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	fill_n(phc, m_ar*m_ar, 0);
 
-
-
 	for(i=0; i<m_ar; i++)
 		for(j=0; j<m_ar; j++)
 			pha[i*m_ar + j] = (double)1.0;
@@ -43,9 +37,9 @@ void OnMultLine1(int m_ar, int m_br)
 	const auto start{std::chrono::steady_clock::now()};
 
     #pragma omp parallel for
-	for(i=0; i<m_ar; i++) {
-		for(k=0; k<m_ar; k++) {
-			for(j=0; j<m_br; j++) {	
+	for(int i=0; i<m_ar; i++) {
+		for(int k=0; k<m_ar; k++) {
+			for(int j=0; j<m_br; j++) {	
 				phc[i*m_ar+j] += pha[i*m_ar+k] * phb[k*m_br+j];
 			}
 		}
@@ -70,7 +64,6 @@ void OnMultLine1(int m_ar, int m_br)
     free(phc);
 }
 
-
 void OnMultLine2(int m_ar, int m_br)
 {
 	SYSTEMTIME Time1, Time2;
@@ -86,8 +79,6 @@ void OnMultLine2(int m_ar, int m_br)
 	phc = (double *)malloc((m_ar * m_ar) * sizeof(double));
 	fill_n(phc, m_ar*m_ar, 0);
 
-
-
 	for(i=0; i<m_ar; i++)
 		for(j=0; j<m_ar; j++)
 			pha[i*m_ar + j] = (double)1.0;
@@ -100,17 +91,17 @@ void OnMultLine2(int m_ar, int m_br)
 	const auto start{std::chrono::steady_clock::now()};
 
     #pragma omp parallel
-	for(i=0; i<m_ar; i++) {
-		for(k=0; k<m_ar; k++) {
+	for(int i=0; i<m_ar; i++) {
+		for(int k=0; k<m_ar; k++) {
             #pragma omp for
-			for(j=0; j<m_br; j++) {	
+			for(int j=0; j<m_br; j++) {	
 				phc[i*m_ar+j] += pha[i*m_ar+k] * phb[k*m_br+j];
 			}
 		}
 	}
 
-        const auto end{std::chrono::steady_clock::now()};
-        const std::chrono::duration<double> elapsed_seconds{end - start};
+	const auto end{std::chrono::steady_clock::now()};
+	const std::chrono::duration<double> elapsed_seconds{end - start};
 
 	sprintf(st, "Time: %3.3f seconds\n", elapsed_seconds);
 	cout << st;
@@ -127,9 +118,7 @@ void OnMultLine2(int m_ar, int m_br)
     free(phc);
 }
 
-
-
-int main(){
+int main() {
     char c;
 	int lin, col, blockSize;
 	int op;
@@ -145,8 +134,7 @@ int main(){
 
 
 	ret = PAPI_create_eventset(&EventSet);
-		if (ret != PAPI_OK) cout << "ERROR: create eventset" << endl;
-
+	if (ret != PAPI_OK) cout << "ERROR: create eventset" << endl;
 
 	ret = PAPI_add_event(EventSet,PAPI_L1_DCM );
 	if (ret != PAPI_OK) cout << "ERROR: PAPI_L1_DCM" << endl;
@@ -228,11 +216,7 @@ int main(){
 						std::cout << "FAIL reset" << endl; 
 				}
 				break;
-
 		}
-
-
-
 	} while (op != 0);
 
 	ret = PAPI_remove_event( EventSet, PAPI_L1_DCM );
@@ -258,7 +242,4 @@ int main(){
 	ret = PAPI_destroy_eventset( &EventSet );
 	if ( ret != PAPI_OK )
 		std::cout << "FAIL destroy" << endl;
-
-
-
 }
