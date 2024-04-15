@@ -4,10 +4,12 @@ make:
 	# Do not change
 
 run_client:
-	java -cp bin/ client/Hello		# Change to name of the "conducting" class
+	java -cp bin/ client/Client
+	# Change to name of the "conducting" class
 
 run_server:
-	java -cp bin/ server/Game		# Change to name of the "conducting" class
+	java -cp bin/ server/Server 8080
+	# Change to name of the "conducting" class
 
 clean:
 	rm -rf bin

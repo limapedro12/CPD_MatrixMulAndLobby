@@ -1,15 +1,22 @@
+package server;
+
 import java.io.*;
 import java.net.*;
-import java.util.Date;
+import java.util.*;
+
+public class Server {
+    public static void main(String[] args) {
+        if (args.length < 1) return;
  
-/**
- * This program demonstrates a simple TCP/IP socket server.
- *
- * @author www.codejava.net
- */
-public class CalculatorServer {
- 
-    public static void startServer(int port) {
+        int port = Integer.parseInt(args[0]);
+
+        Game game = new Game(new ArrayList<String>());
+
+        game.startServer(port);
+    }
+
+    public void startServer(int port) {
+        System.out.println("Starting game with " + userTokens.size() + " players");
  
         try (ServerSocket serverSocket = new ServerSocket(port)) {
  
@@ -18,7 +25,7 @@ public class CalculatorServer {
             while (true) {
                 Socket socket = serverSocket.accept();
 
-                CalculatorThread thread = new CalculatorThread(socket);
+                GameThread thread = new GameThread(socket);
                 thread.start();
             }
  
@@ -26,13 +33,5 @@ public class CalculatorServer {
             System.out.println("Server exception: " + ex.getMessage());
             ex.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {
-        if (args.length < 1) return;
- 
-        int port = Integer.parseInt(args[0]);
-
-        startServer(port);
     }
 }

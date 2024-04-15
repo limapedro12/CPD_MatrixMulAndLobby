@@ -11,29 +11,10 @@ import java.util.*;
  */
 public class Game {
 
-    private List<Socket> userSockets;
+    private List<Player> players;
+    private GameThread thread;
 
-    public Game(int players, List<Socket> userSockets) {
-        this.userSockets = userSockets;
-    }
- 
-    public void startServer(int port) {
-        System.out.println("Starting game with " + userSockets.size() + " players");
- 
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
- 
-            System.out.println("Server is listening on port " + port);
- 
-            while (true) {
-                Socket socket = serverSocket.accept();
-
-                GameThread thread = new GameThread(socket);
-                thread.start();
-            }
- 
-        } catch (IOException ex) {
-            System.out.println("Server exception: " + ex.getMessage());
-            ex.printStackTrace();
-        }
+    public Game(List<String> userTokens) {
+        this.userTokens = userTokens;
     }
 }

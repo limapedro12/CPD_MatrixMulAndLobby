@@ -5,6 +5,9 @@ import java.net.*;
 import java.util.*;
 
 public class GameThread extends Thread {
+
+    private Game gameInstance;
+
     private Socket socket;
 
     private int localSum = 0;
