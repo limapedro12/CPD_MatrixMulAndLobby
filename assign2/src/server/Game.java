@@ -1,3 +1,5 @@
+package server;
+
 import java.net.*;
 import java.util.List;
 
@@ -8,10 +10,11 @@ public class Game {
         this.userSockets = userSockets;
     }
 
-    public void start() {
+    public static void main(String[] args) {
         // Code to start the game
-        System.out.println("Starting game with " + userSockets.size() + " players");
-
+        //System.out.println("Starting game with " + userSockets.size() + " players");
+        System.out.println("Hello from Server!");
+        Game2.message();
         // ...
     }
 }
