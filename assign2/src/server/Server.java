@@ -29,7 +29,7 @@ public class Server {
             return;
         }
 
-        System.out.println("Server is online!");
+        System.out.println("Server is online on port " + port + "!");
     }
 
     private static void listen() {
