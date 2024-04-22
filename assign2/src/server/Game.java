@@ -12,9 +12,4 @@ import java.util.*;
 public class Game {
 
     private List<Player> players;
-    private GameThread thread;
-
-    public Game(List<String> userTokens) {
-        this.userTokens = userTokens;
-    }
 }

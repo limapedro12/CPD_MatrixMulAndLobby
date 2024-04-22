@@ -1,1 +1,12 @@
+TODO
+- Client
+
+Januário
 - Mudar makefile para aceitar argumentos de execução (porta, etc.)
+- Jogo (com método run)
+
+Augusto
+- Register e verificação de timeout nos players
+
+Lima
+- Implementar LobbySimple e LobbyRank

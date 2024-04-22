@@ -1,6 +1,8 @@
 make:
 	javac -d bin/ client/*.java
 	javac -d bin/ server/*.java
+	javac -d bin/ server/lobby/*.java
+	javac -d bin/ utils/*.java
 	# Do not change
 
 run_client:
