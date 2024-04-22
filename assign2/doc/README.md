@@ -8,7 +8,9 @@ On the ```src``` directory, run ```make```.
 
 ### Server
 
-Run ```make run_server```.
+Run ```make run_server [PORT=<port>]```.
+
+If a port is not specified, it will be 8080.
 
 ### Client
 

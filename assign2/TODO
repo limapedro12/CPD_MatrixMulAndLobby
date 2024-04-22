@@ -1,5 +1,6 @@
 TODO
 - Client
+- Threads p/ executar jogo
 
 Januário
 - Mudar makefile para aceitar argumentos de execução (porta, etc.)
