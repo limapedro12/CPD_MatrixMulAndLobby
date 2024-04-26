@@ -37,7 +37,7 @@ public class Server {
     private static void listen() {
         while (true) {
             try {
-                Socket socket = serverSocket.accept();
+                Socket socket = serverSocket.accept(); // blocks until a connection is made
                 
                 Thread thread = Thread.ofVirtual().start(() -> listenToSocket(socket));
 
@@ -53,7 +53,7 @@ public class Server {
                 InputStream input = socket.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-                String message = reader.readLine();
+                String message = reader.readLine(); // blocks until a message is received
 
                 if (message != null) {
                     handleMessage(message, socket);
