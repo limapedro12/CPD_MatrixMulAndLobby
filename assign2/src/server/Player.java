@@ -65,7 +65,7 @@ public class Player {
 
     private static boolean existsInDatabase(String username, String password) {
         try {
-            File file = new File("../../server/storage/players.csv");
+            File file = new File("/media/dotw/The Big One/trabalhos(2)/FEUP/3o_ano_2o_semestre/CPD/g17/assign2/src/server/storage/players.csv");
             Scanner scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

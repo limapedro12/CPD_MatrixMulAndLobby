@@ -12,6 +12,8 @@ public class Server {
     private static SimpleLobby simpleLobby = new SimpleLobby();
     private static RankLobby rankLobby = new RankLobby();
 
+    private static List<Socket> userSockets = new ArrayList<Socket>();
+
     public static void main(String[] args) {
         if (args.length < 1) return;
  
@@ -36,14 +38,28 @@ public class Server {
         while (true) {
             try {
                 Socket socket = serverSocket.accept();
+                
+                Thread thread = Thread.ofVirtual().start(() -> listenToSocket(socket));
 
-                InputStream input = socket.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-                String message = reader.readLine();
-
-                if (message != null) handleMessage(message, socket);
             } catch (IOException e) {
                 System.out.println("Error accepting socket connection: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void listenToSocket(Socket socket) {
+        while (true) {
+            try {
+                InputStream input = socket.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+
+                String message = reader.readLine();
+
+                if (message != null) {
+                    handleMessage(message, socket);
+                }
+            } catch (IOException e) {
+                System.out.println("Error reading message: " + e.getMessage());
             }
         }
     }
@@ -59,14 +75,25 @@ public class Server {
 
         switch (command) {
             case "AUTH":    // AUTH <username> <password>
-                player = Player.login(parts[1], parts[2], socket);
-                if (player != null) player.send("Authenticated successfully.\n TOKEN = " + player.getToken());
-                else sendDirectMessage("Account does not exist.", socket);
+                synchronized (Player.class) {
+                    player = Player.login(parts[1], parts[2], socket);
+                }
+
+                if (player != null)
+                    synchronized (player){
+                        player.send("Authenticated successfully.\n TOKEN = " + player.getToken());
+                    }
+                else 
+                    sendDirectMessage("Account does not exist.", socket);
                 break;
             case "REGISTER":    // REGISTER <username> <password>
-                player = Player.login(parts[1], parts[2], socket);
+                synchronized (Player.class){
+                    player = Player.login(parts[1], parts[2], socket);
+                }
                 if (player == null) sendDirectMessage("Account already exists.", socket);
-                else player.send("Registered succesfully. Please log in.");
+                else synchronized (player) {
+                    player.send("Registered succesfully. Please log in.");
+                }
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
