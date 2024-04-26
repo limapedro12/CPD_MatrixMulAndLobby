@@ -35,11 +35,14 @@ public class Server {
     }
 
     private static void listen() {
+        Thread.ofVirtual().start(() -> listenToSockets());
         while (true) {
             try {
                 Socket socket = serverSocket.accept(); // blocks until a connection is made
-                
-                Thread thread = Thread.ofVirtual().start(() -> listenToSocket(socket));
+
+                synchronized (userSockets) {
+                    userSockets.add(socket);
+                }
 
             } catch (IOException e) {
                 System.out.println("Error accepting socket connection: " + e.getMessage());
@@ -47,16 +50,21 @@ public class Server {
         }
     }
 
-    private static void listenToSocket(Socket socket) {
+    private static void listenToSockets() {
         while (true) {
+            List<Socket> copySockets;
+            synchronized (userSockets) {
+                copySockets = new ArrayList<Socket>(userSockets);
+            }
             try {
-                InputStream input = socket.getInputStream();
-                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                for (Socket socket : copySockets) {
+                    InputStream input = socket.getInputStream();
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-                String message = reader.readLine(); // blocks until a message is received
-
-                if (message != null) {
-                    handleMessage(message, socket);
+                    String message = reader.ready() ? reader.readLine() : null;
+                    if (message != null) {
+                        handleMessage(message, socket);
+                    }
                 }
             } catch (IOException e) {
                 System.out.println("Error reading message: " + e.getMessage());
@@ -75,25 +83,19 @@ public class Server {
 
         switch (command) {
             case "AUTH":    // AUTH <username> <password>
-                synchronized (Player.class) {
-                    player = Player.login(parts[1], parts[2], socket);
-                }
+                player = Player.login(parts[1], parts[2], socket);
 
                 if (player != null)
-                    synchronized (player){
-                        player.send("Authenticated successfully.\n TOKEN = " + player.getToken());
-                    }
+                    player.send("Authenticated successfully.\n TOKEN = " + player.getToken());
                 else 
                     sendDirectMessage("Account does not exist.", socket);
                 break;
             case "REGISTER":    // REGISTER <username> <password>
-                synchronized (Player.class){
-                    player = Player.login(parts[1], parts[2], socket);
-                }
-                if (player == null) sendDirectMessage("Account already exists.", socket);
-                else synchronized (player) {
+                player = Player.login(parts[1], parts[2], socket);
+                if (player == null) 
+                    sendDirectMessage("Account already exists.", socket);
+                else 
                     player.send("Registered succesfully. Please log in.");
-                }
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
