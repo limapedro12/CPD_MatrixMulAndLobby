@@ -52,18 +52,24 @@ public class Server {
 
     private static void listenToSockets() {
         while (true) {
-            List<Socket> copySockets;
+            int size;
             synchronized (userSockets) {
-                copySockets = new ArrayList<Socket>(userSockets);
+                size = userSockets.size();
             }
             try {
-                for (Socket socket : copySockets) {
-                    InputStream input = socket.getInputStream();
-                    BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                for (int i = 0; i < size; i++) {
+                    Socket socket;
+                    synchronized (userSockets) {
+                        socket = userSockets.get(i);
+                    }
+                    synchronized (socket) {
+                        InputStream input = socket.getInputStream();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-                    String message = reader.ready() ? reader.readLine() : null;
-                    if (message != null) {
-                        handleMessage(message, socket);
+                        String message = reader.ready() ? reader.readLine() : null;
+                        if (message != null) {
+                            handleMessage(message, socket);
+                        }
                     }
                 }
             } catch (IOException e) {
