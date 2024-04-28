@@ -102,4 +102,8 @@ public class Player {
             System.out.println("Cannot send message to player " + this.username);
         }
     }
+
+    public String receive() {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
 }
