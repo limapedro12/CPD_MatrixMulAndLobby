@@ -12,7 +12,7 @@ import java.util.Scanner;
 
 import utils.Pair;
 
-public class Player {
+public class Player implements Comparable<Player> {
     // represents a Player from the perspective of the server
 
     private static Map<Pair<String, String>, Player> loggedPlayers = new HashMap<Pair<String, String>, Player>();
@@ -25,6 +25,16 @@ public class Player {
     private String password;
 
     private int points = 0;
+
+    private int guessDist;
+
+    public void setGuessDist(int guessDist) {
+        this.guessDist = guessDist;
+    }
+
+    public int getGuessDist() {
+        return this.guessDist;
+    }
 
     public Player(String username, String password) {
         this.username = username;
@@ -105,5 +115,22 @@ public class Player {
 
     public String receive() {
         throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    @Override
+    public int compareTo(Player other) {
+        return Integer.compare(other.getGuessDist(), this.guessDist);
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "username='" + username + '\'' +
+                ", distance=" + guessDist +
+                '}';
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }

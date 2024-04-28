@@ -5,7 +5,6 @@ import java.util.*;
 public class Game {
 
     private List<Player> players;
-    private List<Integer> guesses = new ArrayList<>();
 
     public Game(List<Player> players) {
         this.players = players;
@@ -46,13 +45,38 @@ public class Game {
                         guess = Integer.parseInt(answer);
                         if (guess < 0 || guess > 100) throw new IllegalArgumentException();
                     } catch (Exception e) {
-                        player.send("Your guess was invalid. Please try again, making sure it is an integer between 0 and 100.");
+                        player.send("Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
                         guess = -1;
                     }
                 }
-                guesses.add(guess);
+                player.setGuessDist(Math.abs(guess-number));
             }
-            guesses.clear();
+
+            notifyPlayers(generateRoundRank(number));
+
+            Player last = players.getLast();
+            last.send("You terminated in #" + players.size() + ".");
+            // last.changeState(not playing);
+            players.removeLast();
         }
+        players.get(0).send("You won. Congratulations!");
+    }
+
+    private String generateRoundRank(int number) {
+        StringBuilder ret = new StringBuilder();
+        ret.append("1");
+
+        Collections.sort(players);
+
+        Player player;
+
+        for (int i = 0; i < players.size() - 1; i++) {
+            player = players.get(i);
+            ret.append("#" + (i+1) + ": " + player.getUsername() + ", distance = " + player.getGuessDist() + "\n");
+        }
+        player = players.getLast();
+        ret.append("#" + players.size() + ": " + player.getUsername() + ", distance = " + player.getGuessDist() + "\n");
+
+        return ret.toString();
     }
 }
