@@ -102,4 +102,8 @@ public class Player {
             System.out.println("Cannot send message to player " + this.username);
         }
     }
+
+    public Socket getSocket() {
+        return this.currentSocket;
+    }
 }

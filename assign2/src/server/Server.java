@@ -9,7 +9,7 @@ import server.lobby.*;
 public class Server {
     private static ServerSocket serverSocket;
 
-    private static SimpleLobby simpleLobby = new SimpleLobby();
+    private static SimpleLobby simpleLobby = new SimpleLobby(3);
     private static RankLobby rankLobby = new RankLobby();
 
     private static List<Socket> userSockets = new ArrayList<Socket>();
@@ -104,7 +104,12 @@ public class Server {
                     player.send("Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
-                simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                Player possiblePlayer = Player.getPlayerByToken(parts[1]);
+                if(possiblePlayer != null){
+                    simpleLobby.addPlayer(possiblePlayer);
+                    possiblePlayer.send("You have been added to the simple lobby.");
+                } else
+                    sendDirectMessage("Invalid token.", socket);
                 break;
             case "RANK":    // RANK <token>
                 rankLobby.addPlayer(Player.getPlayerByToken(parts[1]));
