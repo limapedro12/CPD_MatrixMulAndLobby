@@ -32,6 +32,8 @@ public class Player {
     private String username;
     private String password;
 
+    private PlayerState state = PlayerState.IDLE;
+
     private int points = 0;
 
     public Player(String username, String password) {
@@ -145,6 +147,19 @@ public class Player {
         } catch (IOException ex) {
             System.out.println("Cannot send message to player " + this.username);
         }
+        this.lockPlayer.unlock();
+    }
+
+    public PlayerState getState() {
+        this.lockPlayer.lock();
+        PlayerState retState = this.state;
+        this.lockPlayer.unlock();
+        return retState;
+    }
+
+    public void setState(PlayerState state) {
+        this.lockPlayer.lock();
+        this.state = state;
         this.lockPlayer.unlock();
     }
 }

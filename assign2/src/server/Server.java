@@ -93,7 +93,15 @@ public class Server {
                     player.send("Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
-                simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                player = Player.getPlayerByToken(parts[1]);
+
+                if (player == null)
+                    sendDirectMessage("Account does not exist.", socket);
+                else if(player.getState() == PlayerState.IDLE){
+                    simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                    player.send("Player added to Simple Lobby");
+                } else
+                    player.send("Player already in " + player.getState());
                 break;
             case "RANK":    // RANK <token>
                 rankLobby.addPlayer(Player.getPlayerByToken(parts[1]));
