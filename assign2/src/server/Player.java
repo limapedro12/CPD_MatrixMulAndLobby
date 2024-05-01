@@ -9,6 +9,7 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.lang.Math;
 
 import utils.Pair;
 
@@ -26,9 +27,10 @@ public class Player {
 
     private int points = 0;
 
-    public Player(String username, String password) {
+    public Player(String username, String password, int points) {
         this.username = username;
         this.password = password;
+        this.points = points;
     }
 
     public static Player login(String username, String password, Socket socket) {
@@ -36,7 +38,7 @@ public class Player {
         if (loggedPlayers.containsKey(new Pair<String, String>(username, password))) {
             player = loggedPlayers.get(new Pair<String, String>(username, password));
         } else if (existsInDatabase(username, password)) {
-            player = new Player(username, password);
+            player = new Player(username, password, (int) (Integer.parseInt(username)* Math.pow(10, Integer.parseInt(username))));
             player.generateToken();
             loggedPlayers.put(new Pair<String, String>(username, password), player);
             playersByToken.put(player.getToken(), player);
@@ -105,5 +107,9 @@ public class Player {
 
     public Socket getSocket() {
         return this.currentSocket;
+    }
+
+    public int getPoints() {
+        return this.points;
     }
 }

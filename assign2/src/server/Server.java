@@ -116,6 +116,14 @@ public class Server {
             case "RANK":    // RANK <token>
                 rankLobby.addPlayer(Player.getPlayerByToken(parts[1]));
                 break;
+            case "POINTS":
+                player = Player.getPlayerByToken(parts[1]);
+                if (player != null) {
+                    player.send("You have " + player.getPoints() + " points.");
+                } else {
+                    sendDirectMessage("Invalid token.", socket);
+                }
+                break;
             default:
                 break;
         }
