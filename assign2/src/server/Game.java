@@ -21,6 +21,8 @@ public class Game implements Runnable {
     }
 
     public void run() {
+        System.out.println("Game started!");
+
         for (Player player : players) {
             player.send("Welcome to the game!");
             player.send("Goodbye!");

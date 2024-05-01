@@ -15,6 +15,7 @@ import utils.Pair;
 public class RankLobby implements Runnable, Lobby {
     private int step;
     private int numPlayers;
+    private boolean show;
 
     private List<Player> playersWaiting;
     private List<Integer> timeWaiting;
@@ -24,10 +25,17 @@ public class RankLobby implements Runnable, Lobby {
     public RankLobby(int numPlayers, int step) {
         this.numPlayers = numPlayers;
         this.step = step;
+        this.show = false;
 
-        playersWaiting = new ArrayList<Player>();
-        timeWaiting = new ArrayList<Integer>();
+        this.playersWaiting = new ArrayList<Player>();
+        this.timeWaiting = new ArrayList<Integer>();
     }
+
+    public RankLobby(int numPlayers, int step, boolean show) {
+        this(numPlayers, step);
+        this.show = show;
+    }
+
     public void addPlayer(Player player) {
         player.setState(PlayerState.RANK_LOBBY);
         lock.lock();
@@ -46,10 +54,12 @@ public class RankLobby implements Runnable, Lobby {
                  break;
             }
 
-            if(!playersWaiting.isEmpty()){
-                System.out.println("Players waiting: " + playersWaiting.size() + " Time waiting: " + time++);
-            } else {
-                time = 0;
+            if(show){
+                if(!playersWaiting.isEmpty()){
+                    System.out.println("Players waiting: " + playersWaiting.size() + " Time waiting: " + time++);
+                } else {
+                    time = 0;
+                }
             }
 
             lock.lock();
@@ -117,6 +127,14 @@ public class RankLobby implements Runnable, Lobby {
                     }
                 }
             } 
+
+            if(show){
+                if(!playersWaiting.isEmpty()){
+                    System.out.println("List Ordered: " + listOrdered);
+                    System.out.println("Player Sets: " + playerSets);
+                }
+            }
+
             lock.unlock();  
         }
     }

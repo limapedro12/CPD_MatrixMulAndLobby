@@ -10,7 +10,7 @@ public class Server {
     private static ServerSocket serverSocket;
 
     private static SimpleLobby simpleLobby = new SimpleLobby(3);
-    private static RankLobby rankLobby = new RankLobby(100, 3);
+    private static RankLobby rankLobby = new RankLobby(3, 100, true);
 
     private static List<Socket> userSockets = new ArrayList<Socket>();
 
