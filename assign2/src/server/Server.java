@@ -35,14 +35,11 @@ public class Server {
     }
 
     private static void listen() {
-        Thread.ofVirtual().start(() -> listenToSockets());
         while (true) {
             try {
                 Socket socket = serverSocket.accept(); // blocks until a connection is made
 
-                synchronized (userSockets) {
-                    userSockets.add(socket);
-                }
+                Thread.ofVirtual().start(() -> listenToSocket(socket));
 
             } catch (IOException e) {
                 System.out.println("Error accepting socket connection: " + e.getMessage());
@@ -50,29 +47,17 @@ public class Server {
         }
     }
 
-    private static void listenToSockets() {
+    private static void listenToSocket(Socket socket) {
         while (true) {
-            int i = -1;
-            int size;
-            synchronized (userSockets) {
-                size = userSockets.size();
-            }
             try {
-                for (i = 0; i < size; i++) {
-                    Socket socket;
-                    synchronized (userSockets) {
-                        socket = userSockets.get(i);
-                    }
-                    synchronized (socket) {
-                        InputStream input = socket.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+                InputStream input = socket.getInputStream();
+                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 
-                        String message = reader.ready() ? reader.readLine() : null;
-                        if (message != null) {
-                            handleMessage(message, socket);
-                        }
-                    }
+                String message = reader.readLine();
+                if (message != null) {
+                    handleMessage(message, socket);
                 }
+            
             } catch (IOException e) {
                 System.out.println("Error reading message " + Integer.toString(i) + ": " + e.getMessage());
                 break;
@@ -83,7 +68,10 @@ public class Server {
     private static void handleMessage(String message, Socket socket) {
         String[] parts = message.split(" ");
 
-        if (parts.length < 2) return;
+        if (parts.length < 2) {
+            sendDirectMessage("Invalid command.", socket);
+            return;
+        }
 
         String command = parts[0];
 
@@ -94,7 +82,7 @@ public class Server {
                 player = Player.login(parts[1], parts[2], socket);
 
                 if (player != null)
-                    player.send("Authenticated successfully.\n TOKEN = " + player.getToken());
+                    player.send("Authenticated successfully.\nTOKEN = " + player.getToken());
                 else 
                     sendDirectMessage("Account does not exist.", socket);
                 break;
@@ -106,12 +94,15 @@ public class Server {
                     player.send("Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
-                Player possiblePlayer = Player.getPlayerByToken(parts[1]);
-                if(possiblePlayer != null){
-                    simpleLobby.addPlayer(possiblePlayer);
-                    possiblePlayer.send("You have been added to the simple lobby.");
+                player = Player.getPlayerByToken(parts[1]);
+
+                if (player == null)
+                    sendDirectMessage("Account does not exist.", socket);
+                else if(player.getState() == PlayerState.IDLE){
+                    simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                    player.send("Player added to Simple Lobby");
                 } else
-                    sendDirectMessage("Invalid token.", socket);
+                    player.send("Player already in " + player.getState());
                 break;
             case "RANK":    // RANK <token>
                 rankLobby.addPlayer(Player.getPlayerByToken(parts[1]));
@@ -125,6 +116,7 @@ public class Server {
                 }
                 break;
             default:
+                sendDirectMessage("Invalid command.", socket);
                 break;
         }
     }
