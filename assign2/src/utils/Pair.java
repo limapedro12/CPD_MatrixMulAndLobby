@@ -9,4 +9,12 @@ public class Pair<T1, T2> {
         this.first = first;
         this.second = second;
     }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof Pair) {
+            Pair<?, ?> other = (Pair<?, ?>) obj;
+            return this.first.equals(other.first) && this.second.equals(other.second);
+        }
+        return false;
+    }
 }

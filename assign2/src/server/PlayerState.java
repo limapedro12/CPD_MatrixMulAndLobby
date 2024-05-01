@@ -1,6 +1,6 @@
 package server;
 
-enum PlayerState {
+public enum PlayerState {
     IDLE,
     SIMPLE_LOBBY,
     RANK_LOBBY,

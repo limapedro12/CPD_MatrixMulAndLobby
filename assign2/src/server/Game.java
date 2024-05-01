@@ -15,12 +15,19 @@ public class Game implements Runnable {
 
     public Game(Set<Player> players) {
         this.players = players;
+        for(Player player : players) {
+            player.setState(PlayerState.GAME);
+        }
     }
 
     public void run() {
         for (Player player : players) {
             player.send("Welcome to the game!");
             player.send("Goodbye!");
+        }
+
+        for (Player player : players) {
+            player.setState(PlayerState.IDLE);
         }
     }
 }

@@ -75,10 +75,14 @@ public class Player {
         return player;
     }
 
-    public static Player getPlayerByToken(String token) {
+    public static Player getPlayerByToken(String token, Socket socket) {
         lockPlayersByToken.lock();
         Player p = playersByToken.get(token);
         lockPlayersByToken.unlock();
+        
+        p.lockPlayer.lock();
+        p.currentSocket = socket;
+        p.lockPlayer.unlock();
 
         return p;
     }
@@ -166,10 +170,16 @@ public class Player {
     }
 
     public Socket getSocket() {
-        return this.currentSocket;
+        this.lockPlayer.lock();
+        Socket socket = this.currentSocket;
+        this.lockPlayer.unlock();
+        return socket;
     }
 
     public int getPoints() {
-        return this.points;
+        this.lockPlayer.lock();
+        int retPoints = this.points;
+        this.lockPlayer.unlock();
+        return retPoints;
     }
 }
