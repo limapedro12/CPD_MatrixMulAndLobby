@@ -56,7 +56,7 @@ public class Player {
     }
 
     private void generateToken() {
-        this.currentToken = this.username + Integer.toString((int) (Math.random() * 1000000));
+        this.currentToken = this.username; //+ Integer.toString((int) (Math.random() * 1000000));
     }
 
     public String getToken() {

@@ -2,6 +2,7 @@ package server.lobby;
 
 import server.Player;
 import server.Game;
+import java.util.HashSet;
 
 public class SimpleLobby implements Lobby {
     private int numPlayers;
@@ -10,10 +11,10 @@ public class SimpleLobby implements Lobby {
         this.numPlayers = numPlayers;
     }
 
-    public void addPlayer(Player player) {
+    public synchronized void addPlayer(Player player) {
         playersWaiting.add(player);
         if(playersWaiting.size() == this.numPlayers) {
-            new Thread(new Game(playersWaiting)).start();
+            new Thread(new Game(new HashSet<Player>(playersWaiting))).start();
             playersWaiting.clear();
         }
     }

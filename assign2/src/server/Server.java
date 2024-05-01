@@ -52,12 +52,13 @@ public class Server {
 
     private static void listenToSockets() {
         while (true) {
+            int i = -1;
             int size;
             synchronized (userSockets) {
                 size = userSockets.size();
             }
             try {
-                for (int i = 0; i < size; i++) {
+                for (i = 0; i < size; i++) {
                     Socket socket;
                     synchronized (userSockets) {
                         socket = userSockets.get(i);
@@ -73,7 +74,8 @@ public class Server {
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Error reading message: " + e.getMessage());
+                System.out.println("Error reading message " + Integer.toString(i) + ": " + e.getMessage());
+                break;
             }
         }
     }
