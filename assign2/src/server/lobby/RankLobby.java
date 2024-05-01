@@ -121,7 +121,7 @@ public class RankLobby implements Runnable, Lobby {
                         players.add(playersWaiting.get(i));
                     }
                     new Thread(new Game(players)).start();
-                    for(Integer i : set) {
+                    for(int i : set) {
                         playersWaiting.remove(i);
                         timeWaiting.remove(i);
                     }
