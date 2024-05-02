@@ -10,6 +10,8 @@ public interface Lobby {
 
     public void addPlayer(Player player);
 
+    public void removePlayer(Player player);
+
     public default void notifyPlayers(String message) {
         for (Player player : playersWaiting)
             player.send(message);

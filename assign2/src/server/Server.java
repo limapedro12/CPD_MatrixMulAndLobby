@@ -117,6 +117,24 @@ public class Server {
                 } else
                     player.send("Player already in " + player.getState());
                 break;
+            case "LEAVE_LOBBY":
+                player = Player.getPlayerByToken(parts[1], socket);
+                if (player != null) {
+                    if (player.getState() == PlayerState.SIMPLE_LOBBY) {
+                        simpleLobby.removePlayer(player);
+                        player.send("Player removed from Simple Lobby");
+                        player.setState(PlayerState.IDLE);
+                    } else if (player.getState() == PlayerState.RANK_LOBBY) {
+                        rankLobby.removePlayer(player);
+                        player.send("Player removed from Rank Lobby");
+                        player.setState(PlayerState.IDLE);
+                    } else {
+                        player.send("Player not in a lobby");
+                    }
+                } else {
+                    sendDirectMessage("Invalid token.", socket);
+                }
+                break;
             case "POINTS":
                 player = Player.getPlayerByToken(parts[1], socket);
                 if (player != null) {

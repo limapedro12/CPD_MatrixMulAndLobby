@@ -138,4 +138,14 @@ public class RankLobby implements Runnable, Lobby {
             lock.unlock();  
         }
     }
+
+    public void removePlayer(Player player) {
+        lock.lock();
+        int index = playersWaiting.indexOf(player);
+        if(index != -1) {
+            playersWaiting.remove(index);
+            timeWaiting.remove(index);
+        }
+        lock.unlock();
+    }
 }
