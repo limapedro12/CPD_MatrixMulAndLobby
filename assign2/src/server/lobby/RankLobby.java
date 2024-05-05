@@ -11,6 +11,7 @@ import server.Player;
 import server.PlayerState;
 
 import utils.Pair;
+import utils.Triplet;
 
 public class RankLobby implements Runnable, Lobby {
     private int step;
@@ -87,31 +88,84 @@ public class RankLobby implements Runnable, Lobby {
                 listOrdered.add(new Pair<>(minPoints, i));
             }
 
-            listOrdered.sort((a, b) -> a.first - b.first);
+            // List<Triplet<Integer, Integer, String>> listOrdered = new ArrayList<>();
 
-            Set<Set<Integer>> playerSets = new HashSet<>();
-            Set<Integer> currentSet = new HashSet<>();
-            Set<Integer> tempSet = new HashSet<>();
-            for(Pair<Integer, Integer> pair : listOrdered) {
-                if(tempSet.isEmpty()){
-                    if(!currentSet.isEmpty()){
-                        playerSets.add(new HashSet<>(currentSet));
-                        currentSet.clear();
-                    }
-                    tempSet.add(pair.second);
-                    currentSet.add(pair.second);
-                } else {
-                    if(tempSet.contains(pair.second)) {
-                        tempSet.remove(pair.second);
-                    } else {
-                        tempSet.add(pair.second);
-                        currentSet.add(pair.second);
-                    }
-                }
+            // for (int i = 0; i < playersWaiting.size(); i++) {
+            //     int playersPoints = playersWaiting.get(i).getPoints();
+            //     int maxPoints = playersPoints + timeWaiting.get(i) * step;
+            //     int minPoints = playersPoints - timeWaiting.get(i) * step;
+            //     listOrdered.add(new Triplet<>(maxPoints, i, "max"));
+            //     listOrdered.add(new Triplet<>(minPoints, i, "min"));
+            //     listOrdered.add(new Triplet<>(playersPoints, i, "center"));
+            // }
+
+            listOrdered.sort((a, b) -> b.first - a.first);
+
+            // Set<Set<Integer>> playerSets = new HashSet<>();
+            // Set<Integer> currentSet = new HashSet<>();
+            // Set<Integer> tempSet = new HashSet<>();
+            // for(Pair<Integer, Integer> pair : listOrdered) {
+            //     if(tempSet.isEmpty()){
+            //         if(!currentSet.isEmpty()){
+            //             playerSets.add(new HashSet<>(currentSet));
+            //             currentSet.clear();
+            //         }
+            //         tempSet.add(pair.second);
+            //         currentSet.add(pair.second);
+            //     } else {
+            //         if(tempSet.contains(pair.second)) {
+            //             tempSet.remove(pair.second);
+            //         } else {
+            //             tempSet.add(pair.second);
+            //             currentSet.add(pair.second);
+            //         }
+            //     }
+            // }
+
+            // if(!currentSet.isEmpty()){
+            //     playerSets.add(new HashSet<>(currentSet));
+            // }
+
+            // P:2000-R:300  P:1750-R:750  P:70-R:10  P:50-R:50  P:30-R:30 P:30-R:1  P:5-R:1
+            // 
+            // 2300-0-max 2000-0-center 1700-0-min 
+            // 2500-1-max 1750-1-center 1000-1-min 
+            // 80-2-max 70-2-center 60-2-min 
+            // 100-3-max 50-3-center 0-3-min
+            // 60-4-max 30-4-center 0-4-min
+            // 31-5-max 30-5-center 29-5-min 
+            // 6-6-max 5-6-center 4-6-min
+            // 
+            // 2500-1-max 2300-0-max 2000-0-center
+            // 1750-1-center 1700-0-min 1000-1-min
+            // 100-3-max 80-2-max 70-2-center
+            // 60-4-max 60-2-min 50-3-center
+            // 31-5-max 30-4-center 30-5-center
+            // 29-5-min 6-6-max 5-6-center
+            // 4-6-min 0-3-min 0-4-min
+            // 
+            // currOpen: 3, 4
+            // {0, 1}, {1, 0}, {2}, {3, 2, 4, 5, 6}, {4, 3, 5, 6}, {5, 4}, {6}
+            //
+            // {0, 1}, {2}, {3,4}, {4,5}, {6}
+
+            List<Set<Integer>> playerSets = new ArrayList<>();
+            Set<Integer> currentOpen = new HashSet<>();
+
+            for (int i = 0; i < playersWaiting.size(); i++) {
+                playerSets.add(new HashSet<>({i}));
             }
 
-            if(!currentSet.isEmpty()){
-                playerSets.add(new HashSet<>(currentSet));
+            for(Triplet<Integer, Integer, String> triplet : listOrdered) {
+                if(triplet.third.equals("center")) {
+                    for(int i : currentOpen) {
+                        playerSets.get(i).add(triplet.second)
+                    }
+                } else if(triplet.third.equals("max")) {
+                    currentOpen.add(triplet.second);
+                } else if(triplet.third.equals("min")) {
+                    currentOpen.remove(triplet.second);
+                }
             }
 
             for(Set<Integer> set : playerSets) {
