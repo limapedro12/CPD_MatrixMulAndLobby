@@ -13,7 +13,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import utils.Pair;
 
-public class Player implements Comparable<Player> {
+public class Player {
     // represents a Player from the perspective of the server
 
     private static Map<Pair<String, String>, Player> loggedPlayers = new HashMap<Pair<String, String>, Player>();
@@ -33,18 +33,6 @@ public class Player implements Comparable<Player> {
     private String password;
 
     private PlayerState state = PlayerState.IDLE;
-
-    private int points = 0;
-
-    private int guessDist;
-
-    public void setGuessDist(int guessDist) {
-        this.guessDist = guessDist;
-    }
-
-    public int getGuessDist() {
-        return this.guessDist;
-    }
 
     public Player(String username, String password) {
         this.username = username;
@@ -135,18 +123,6 @@ public class Player implements Comparable<Player> {
         return false;
     }
 
-    public void incrementPoints(int inc) {
-        this.lockPlayer.lock();
-        this.points += inc;
-        this.lockPlayer.unlock();
-    }
-
-    public void decrementPoints(int dec) {
-        this.lockPlayer.lock();
-        this.points = Math.max(0, this.points-dec);
-        this.lockPlayer.unlock();
-    }
-
     public void send(String message) {
         this.lockPlayer.lock();
         try {
@@ -175,19 +151,6 @@ public class Player implements Comparable<Player> {
 
     public String receive() {
         throw new UnsupportedOperationException("Not yet implemented.");
-    }
-
-    @Override
-    public int compareTo(Player other) {
-        return Integer.compare(other.getGuessDist(), this.guessDist);
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "username='" + username + '\'' +
-                ", distance=" + guessDist +
-                '}';
     }
 
     public String getUsername() {
