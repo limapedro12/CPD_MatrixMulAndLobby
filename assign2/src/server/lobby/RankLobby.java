@@ -35,6 +35,7 @@ public class RankLobby implements Runnable, Lobby {
     public RankLobby(int numPlayers, int step, boolean show) {
         this(numPlayers, step);
         this.show = show;
+        if(show) System.out.println("Rank Lobby created with " + numPlayers + " players and step " + step);
     }
 
     public void addPlayer(Player player) {
@@ -60,6 +61,7 @@ public class RankLobby implements Runnable, Lobby {
                     System.out.println("Players waiting: " + playersWaiting.size() + " Time waiting: " + time++);
                 } else {
                     time = 0;
+                    continue;
                 }
             }
 
@@ -85,48 +87,27 @@ public class RankLobby implements Runnable, Lobby {
             Set<Set<Integer>> playerSets = new HashSet<>();
             Set<Integer> currentOpen = new HashSet<>();
             for(Pair<Integer, Integer> pair : listOrdered) {
-                if(tempSet.isEmpty()){
-                    
+                if(currentOpen.contains(pair.second)) {
+                    playerSets.add(new HashSet<>(currentOpen));
+                    currentOpen.remove(pair.second);
                 } else {
-                    if(currentOpen.contains(pair.second)) {
-                        playerSets.add(new HashSet<>(currentOpen));
-                        currentOpen.remove(pair.second);
-                    } else {
-                        currentOpen.add(pair.second);
-                    }
+                    currentOpen.add(pair.second);
                 }
             }
 
-            List<Set<Integer>> playerSets = new ArrayList<>();
-            Set<Integer> currentOpen = new HashSet<>();
-
-            for (int i = 0; i < playersWaiting.size(); i++) {
-                playerSets.add(new HashSet<>({i}));
-            }
-
-            for(Triplet<Integer, Integer, String> triplet : listOrdered) {
-                if(triplet.third.equals("center")) {
-                    playerSets.set(triplet.second, new HashSet<>(currentOpen));
-                } else if(triplet.third.equals("max")) {
-                    currentOpen.add(triplet.second);
-                } else if(triplet.third.equals("min")) {
-                    currentOpen.remove(triplet.second);
-                }
-            }
-
-            for(Set<Integer> set : playerSets) {
-                if(set.size() == numPlayers) {
+            for(Set<Integer> pSet : playerSets) {
+                if(pSet.size() == numPlayers) {
                     List<Player> players = new ArrayList<>();
-                    for(Integer i : set) {
+                    for(Integer i : pSet) {
                         players.add(playersWaiting.get(i));
                     }
-                    Game game = new Game(players);
-                    game.start();
-                    for(Integer i : set) {
+                    Game game = new Game(new HashSet<>(players));
+                    new Thread(game).start();
+                    for(Integer i : pSet) {
                         playersWaiting.remove(i);
                         timeWaiting.remove(i);
                         for(Set<Integer> set : playerSets) {
-                            set.remove(i);
+                            pSet.remove(i);
                         }
                     }
                 }

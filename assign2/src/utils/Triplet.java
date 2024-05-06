@@ -17,7 +17,7 @@ public class Triplet<T1, T2, T3> {
 
     public boolean equals(Object obj){
         if (obj instanceof Triplet) {
-            Triplte<?, ?, ?> other = (Triplte<?, ?, ?>) obj;
+            Triplet<?, ?, ?> other = (Triplet<?, ?, ?>) obj;
             return this.first.equals(other.first) && this.second.equals(other.second) && this.third.equals(other.third);
         }
         return false;

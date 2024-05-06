@@ -182,4 +182,11 @@ public class Player {
         this.lockPlayer.unlock();
         return retPoints;
     }
+
+    public String getName() {
+        this.lockPlayer.lock();
+        String retName = this.username;
+        this.lockPlayer.unlock();
+        return retName;
+    }
 }
