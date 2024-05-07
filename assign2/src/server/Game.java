@@ -44,10 +44,15 @@ public class Game {
                     String answer = null;
 
                     long start = System.currentTimeMillis();
+                    boolean kick = true;
                     while (System.currentTimeMillis() - start < 30000) {
                         answer = player.receive();
+                        if (answer != null) {
+                            kick = false;
+                            break;
+                        }
                     }
-                    if (System.currentTimeMillis() - start >= 30000) {
+                    if (kick) {
                         player.send("You were kicked of the game due to inactivity...");
                         player.setState(PlayerState.IDLE);
                         guessDists.remove(player);
