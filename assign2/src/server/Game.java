@@ -3,7 +3,7 @@ package server;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Game {
+public class Game implements Runnable {
 
     private List<Player> players;
     private Map<Player, Integer> guessDists = new HashMap<>();
@@ -18,9 +18,8 @@ public class Game {
         totalPlayers = players.size();
     }
 
-    public static void run(List<Player> players) {
-        Game game = new Game(players);
-        game.play();
+    public void run() {
+        this.play();
     }
 
     private void notifyPlayers(String message) {

@@ -49,7 +49,8 @@ public class Player {
         if (loggedPlayers.containsKey(new Pair<String, String>(username, password))) {
             player = loggedPlayers.get(new Pair<String, String>(username, password));
         } else if (existsInDatabase(username, password)) {
-            player = new Player(username, password, (int) (Integer.parseInt(username)* Math.pow(10, Integer.parseInt(username))));
+            // player = new Player(username, password, (int) (Integer.parseInt(username)* Math.pow(10, Integer.parseInt(username))));
+            player = new Player(username, password, 0);
 
             player.lockPlayer.lock();
             player.generateToken();
@@ -157,14 +158,17 @@ public class Player {
         this.lockPlayer.unlock();
     }
 
-<<<<<<< HEAD
     public String receive() {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     public String getUsername() {
-        return this.username;
-=======
+        this.lockPlayer.lock();
+        String retName = this.username;
+        this.lockPlayer.unlock();
+        return retName;
+    }
+
     public Socket getSocket() {
         this.lockPlayer.lock();
         Socket socket = this.currentSocket;
@@ -177,13 +181,5 @@ public class Player {
         int retPoints = this.points;
         this.lockPlayer.unlock();
         return retPoints;
-    }
-
-    public String getName() {
-        this.lockPlayer.lock();
-        String retName = this.username;
-        this.lockPlayer.unlock();
-        return retName;
->>>>>>> lobby
     }
 }

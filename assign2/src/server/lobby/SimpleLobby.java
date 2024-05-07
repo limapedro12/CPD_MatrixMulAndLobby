@@ -4,6 +4,7 @@ import server.Player;
 import server.PlayerState;
 import server.Game;
 import java.util.HashSet;
+import java.util.ArrayList;
 
 public class SimpleLobby implements Lobby {
     private int numPlayers;
@@ -20,7 +21,7 @@ public class SimpleLobby implements Lobby {
             playersWaiting.add(player);
             System.out.println("Num Players: " + playersWaiting.size());
             if(playersWaiting.size() == this.numPlayers) {
-                new Thread(new Game(new HashSet<Player>(playersWaiting))).start();
+                new Thread(new Game(new ArrayList<Player>(playersWaiting))).start();
                 playersWaiting.clear();
             }
         }

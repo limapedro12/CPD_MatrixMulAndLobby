@@ -98,7 +98,7 @@ public class RankLobby implements Runnable, Lobby {
 
             for(Set<Integer> pSet : playerSets) {
                 if(pSet.size() == numPlayers) {
-                    Set<Player> players = new HashSet<>();
+                    List<Player> players = new ArrayList<>();
                     for(Integer i : pSet) {
                         players.add(playersWaiting.get(i));
                     }
