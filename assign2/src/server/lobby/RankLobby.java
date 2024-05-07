@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collections;
 import java.util.concurrent.locks.ReentrantLock;
 
 import server.Game;
@@ -97,21 +98,35 @@ public class RankLobby implements Runnable, Lobby {
 
             for(Set<Integer> pSet : playerSets) {
                 if(pSet.size() == numPlayers) {
-                    List<Player> players = new ArrayList<>();
+                    Set<Player> players = new HashSet<>();
                     for(Integer i : pSet) {
                         players.add(playersWaiting.get(i));
                     }
-                    Game game = new Game(new HashSet<>(players));
+                    Game game = new Game(players);
                     new Thread(game).start();
-                    for(Integer i : pSet) {
+
+                    List<Integer> indicesToRemove = new ArrayList<Integer>(pSet);
+                    Collections.sort(indicesToRemove, Collections.reverseOrder());
+                    for(int i : indicesToRemove) {
                         playersWaiting.remove(i);
                         timeWaiting.remove(i);
                         for(Set<Integer> set : playerSets) {
-                            pSet.remove(i);
+                            if(!set.equals(pSet))
+                                set.remove(i);
                         }
                     }
                 }
             }
+            
+            if(show){
+                if(!playersWaiting.isEmpty()){
+                        System.out.println("List Ordered: " + listOrdered);
+                        System.out.println("Player Sets: " + playerSets);
+                        System.out.println("Players waiting: " + playersWaiting);
+                    }
+            }
+
+            lock.unlock();  
         }
     }
 
