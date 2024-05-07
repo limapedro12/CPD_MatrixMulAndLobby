@@ -35,6 +35,8 @@ public class Player {
 
     private PlayerState state = PlayerState.IDLE;
 
+    private String lastMessage = null;
+
     private int points = 0;
 
     public Player(String username, String password, int points) {
@@ -96,7 +98,7 @@ public class Player {
 
     private void generateToken() {
         this.lockPlayer.lock();
-        this.currentToken = this.username; //+ Integer.toString((int) (Math.random() * 1000000));
+        this.currentToken = this.username + Integer.toString((int) (Math.random() * 1000000));
         this.lockPlayer.unlock();
     }
 
@@ -158,8 +160,18 @@ public class Player {
         this.lockPlayer.unlock();
     }
 
+    public void setLastMessage(String message) {
+        this.lockPlayer.lock();
+        this.lastMessage = message;
+        this.lockPlayer.unlock();
+    }
+
     public String receive() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        this.lockPlayer.lock();
+        String ret = this.lastMessage;
+        this.lastMessage = null;
+        this.lockPlayer.unlock();
+        return ret;
     }
 
     public String getUsername() {
