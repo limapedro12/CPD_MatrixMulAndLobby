@@ -9,8 +9,8 @@ import server.lobby.*;
 public class Server {
     private static ServerSocket serverSocket;
 
-    private static SimpleLobby simpleLobby = new SimpleLobby();
-    private static RankLobby rankLobby = new RankLobby();
+    private static SimpleLobby simpleLobby = new SimpleLobby(3);
+    private static RankLobby rankLobby = new RankLobby(3, 100, true);
 
     private static List<Socket> userSockets = new ArrayList<Socket>();
 
@@ -32,6 +32,8 @@ public class Server {
         }
 
         System.out.println("Server is online on port " + port + "!");
+
+        new Thread(rankLobby).start();
     }
 
     private static void listen() {
@@ -60,6 +62,7 @@ public class Server {
             
             } catch (IOException e) {
                 System.out.println("Error reading message: " + e.getMessage());
+                break;
             }
         }
     }
@@ -93,18 +96,53 @@ public class Server {
                     player.send("Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
-                player = Player.getPlayerByToken(parts[1]);
+                player = Player.getPlayerByToken(parts[1], socket);
 
                 if (player == null)
                     sendDirectMessage("Account does not exist.", socket);
                 else if(player.getState() == PlayerState.IDLE){
-                    simpleLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                    simpleLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
                     player.send("Player added to Simple Lobby");
                 } else
                     player.send("Player already in " + player.getState());
                 break;
             case "RANK":    // RANK <token>
-                rankLobby.addPlayer(Player.getPlayerByToken(parts[1]));
+                player = Player.getPlayerByToken(parts[1], socket);
+
+                if (player == null)
+                    sendDirectMessage("Account does not exist.", socket);
+                else if(player.getState() == PlayerState.IDLE){
+                    System.out.println("Player added to Rank Lobby");
+                    rankLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
+                    player.send("Player added to Rank Lobby");
+                } else
+                    player.send("Player already in " + player.getState());
+                break;
+            case "LEAVE_LOBBY":
+                player = Player.getPlayerByToken(parts[1], socket);
+                if (player != null) {
+                    if (player.getState() == PlayerState.SIMPLE_LOBBY) {
+                        simpleLobby.removePlayer(player);
+                        player.send("Player removed from Simple Lobby");
+                        player.setState(PlayerState.IDLE);
+                    } else if (player.getState() == PlayerState.RANK_LOBBY) {
+                        rankLobby.removePlayer(player);
+                        player.send("Player removed from Rank Lobby");
+                        player.setState(PlayerState.IDLE);
+                    } else {
+                        player.send("Player not in a lobby");
+                    }
+                } else {
+                    sendDirectMessage("Invalid token.", socket);
+                }
+                break;
+            case "POINTS":
+                player = Player.getPlayerByToken(parts[1], socket);
+                if (player != null) {
+                    player.send("You have " + player.getPoints() + " points.");
+                } else {
+                    sendDirectMessage("Invalid token.", socket);
+                }
                 break;
             default:
                 sendDirectMessage("Invalid command.", socket);

@@ -9,6 +9,7 @@ import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.lang.Math;
 import java.util.concurrent.locks.ReentrantLock;
 
 import utils.Pair;
@@ -34,9 +35,12 @@ public class Player {
 
     private PlayerState state = PlayerState.IDLE;
 
-    public Player(String username, String password) {
+    private int points = 0;
+
+    public Player(String username, String password, int points) {
         this.username = username;
         this.password = password;
+        this.points = points;
     }
 
     public static Player login(String username, String password, Socket socket) {
@@ -45,7 +49,7 @@ public class Player {
         if (loggedPlayers.containsKey(new Pair<String, String>(username, password))) {
             player = loggedPlayers.get(new Pair<String, String>(username, password));
         } else if (existsInDatabase(username, password)) {
-            player = new Player(username, password);
+            player = new Player(username, password, (int) (Integer.parseInt(username)* Math.pow(10, Integer.parseInt(username))));
 
             player.lockPlayer.lock();
             player.generateToken();
@@ -71,10 +75,14 @@ public class Player {
         return player;
     }
 
-    public static Player getPlayerByToken(String token) {
+    public static Player getPlayerByToken(String token, Socket socket) {
         lockPlayersByToken.lock();
         Player p = playersByToken.get(token);
         lockPlayersByToken.unlock();
+        
+        p.lockPlayer.lock();
+        p.currentSocket = socket;
+        p.lockPlayer.unlock();
 
         return p;
     }
@@ -87,7 +95,7 @@ public class Player {
 
     private void generateToken() {
         this.lockPlayer.lock();
-        this.currentToken = this.username + Integer.toString((int) (Math.random() * 1000000));
+        this.currentToken = this.username; //+ Integer.toString((int) (Math.random() * 1000000));
         this.lockPlayer.unlock();
     }
 
@@ -149,11 +157,33 @@ public class Player {
         this.lockPlayer.unlock();
     }
 
+<<<<<<< HEAD
     public String receive() {
         throw new UnsupportedOperationException("Not yet implemented.");
     }
 
     public String getUsername() {
         return this.username;
+=======
+    public Socket getSocket() {
+        this.lockPlayer.lock();
+        Socket socket = this.currentSocket;
+        this.lockPlayer.unlock();
+        return socket;
+    }
+
+    public int getPoints() {
+        this.lockPlayer.lock();
+        int retPoints = this.points;
+        this.lockPlayer.unlock();
+        return retPoints;
+    }
+
+    public String getName() {
+        this.lockPlayer.lock();
+        String retName = this.username;
+        this.lockPlayer.unlock();
+        return retName;
+>>>>>>> lobby
     }
 }

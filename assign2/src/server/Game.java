@@ -2,7 +2,7 @@ package server;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
- 
+
 public class Game {
 
     private List<Player> players;
@@ -11,8 +11,10 @@ public class Game {
 
     public Game(List<Player> players) {
         this.players = players;
-        for (Player player : players)
+        for (Player player : players){
             guessDists.put(player, null);
+            player.setState(PlayerState.GAME);
+        }
         totalPlayers = players.size();
     }
 
@@ -85,17 +87,21 @@ public class Game {
                 last.send("You lost. +" + points + "points for you!");
                 players.remove(last);
                 // last.incrementPoints(points);
+                last.setState(PlayerState.IDLE);
             }
         }
         Player winner = players.get(0);
         winner.send("You won. Congratulations! +" + totalPlayers + "points for you!");
         // winner.incrementPoints(totalPlayers);
+        winner.setState(PlayerState.IDLE);
         guessDists.clear();
         players.clear();
     }
 
     private String generateRoundRank(int number) {
         StringBuilder ret = new StringBuilder();
+
+        ret.append("The number was " + number + ".\n");
 
         AtomicInteger index = new AtomicInteger(0);
 
@@ -108,3 +114,4 @@ public class Game {
         return ret.toString();
     }
 }
+
