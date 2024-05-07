@@ -34,8 +34,6 @@ public class Player {
 
     private PlayerState state = PlayerState.IDLE;
 
-    private int points = 0;
-
     public Player(String username, String password) {
         this.username = username;
         this.password = password;
@@ -125,18 +123,6 @@ public class Player {
         return false;
     }
 
-    public void incrementPoints(int inc) {
-        this.lockPlayer.lock();
-        this.points += inc;
-        this.lockPlayer.unlock();
-    }
-
-    public void decrementPoints(int dec) {
-        this.lockPlayer.lock();
-        this.points = Math.max(0, this.points-dec);
-        this.lockPlayer.unlock();
-    }
-
     public void send(String message) {
         this.lockPlayer.lock();
         try {
@@ -161,5 +147,13 @@ public class Player {
         this.lockPlayer.lock();
         this.state = state;
         this.lockPlayer.unlock();
+    }
+
+    public String receive() {
+        throw new UnsupportedOperationException("Not yet implemented.");
+    }
+
+    public String getUsername() {
+        return this.username;
     }
 }
