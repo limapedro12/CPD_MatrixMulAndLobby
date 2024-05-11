@@ -66,16 +66,16 @@ public class Server {
 
     private static void handleMessage(String message, Socket socket) {
         String[] parts = message.split(" ");
-        
+
         if (parts.length < 2) {
             sendDirectMessage("Invalid command.", socket);
             return;
         }
-        
+
         String command = parts[0];
 
         Player player = null;
-        
+
         switch (command) {
             case "HELLO":   // HELLO <token>
                 if (parts.length != 2) {
@@ -105,12 +105,12 @@ public class Server {
                     sendDirectMessage("ERROR: Usage: REGISTER <username> <password>", socket);
                     break;
                 }
-                boolean registered = Player.register(parts[1], parts[2], socket);
-                
-                if (registered == false) 
+                player = Player.login(parts[1], parts[2], socket);
+
+                if (player == null) 
                     sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    sendDirectMessage("Registered succesfully. Please log in.",socket);
+                    player.send("Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 if (parts.length != 2) {

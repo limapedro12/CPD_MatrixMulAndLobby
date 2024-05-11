@@ -11,9 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 import java.lang.Math;
 import java.util.concurrent.locks.ReentrantLock;
-import java.io.FileWriter;
-import java.io.BufferedWriter;
-import java.io.IOException;
+
 import utils.Pair;
 
 public class Player {
@@ -110,7 +108,7 @@ public class Player {
         this.lockPlayer.unlock();
         return token;
     }
-    
+
     private static boolean existsInDatabase(String username, String password) {
         databaseLock.lock();
         try {
@@ -122,55 +120,17 @@ public class Player {
                 String[] data = line.split(",");
                 String storedUsername = data[0];
                 String storedPassword = data[1];
-               
                 if (storedUsername.equals(username) && storedPassword.equals(password)) {
                     scanner.close();
+                    databaseLock.unlock();
                     return true;
-                    }
+                }
             }
             scanner.close();
         } catch (FileNotFoundException e) {
             System.out.println("Error: players.csv file not found.");
-        }finally {
+        }
         databaseLock.unlock();
-        }
-        return false;
-    }
-
-    public static boolean register(String newUser, String newPassword, Socket socket){
-        databaseLock.lock();
-        try {
-            String working_dir = System.getProperty("user.dir");
-            File file = new File(working_dir + "/server/storage/players.csv");
-            Scanner scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine();
-                String[] data = line.split(",");
-                String storedUsername = data[0];
-               
-                if (storedUsername.equals(newUser)) { //check if userName already exists
-                    scanner.close();
-                    return false;
-                    }
-            }
-            //if doesnt exist, add new user with password
-            scanner.close();
-            FileWriter fileWriter = new FileWriter(file, true);
-            BufferedWriter writer = new BufferedWriter(fileWriter);
-            writer.write(newUser + "," + newPassword);
-            writer.newLine();
-            writer.close();
-            
-            return true;
-            
-        } catch (FileNotFoundException e) {
-        System.out.println("Error: players.csv file not found.");
-        } catch (IOException e) {
-        System.out.println("Error: IOException occurred while accessing players.csv.");
-        } finally {
-        databaseLock.unlock(); // Sempre chame unlock() no bloco finally
-        }
-
         return false;
     }
 
