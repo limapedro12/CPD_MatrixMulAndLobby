@@ -12,7 +12,7 @@ public class Client {
         ClientStub calculatorStub = new ClientStub();
 
         calculatorStub.createSocket(hostname, port);
-        calculatorStub.send("Dunas sao como divans");
+        calculatorStub.send("REGISTER admin admin");
 
         try { Thread.sleep(100); } 
         catch (Exception e) { System.out.println(e); }
