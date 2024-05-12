@@ -4,7 +4,15 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import java.security.KeyStore;
+
 import server.lobby.*;
+
+// Para conectar utiliza o client ou "openssl s_client -connect localhost:<port>""
 
 public class Server {
     private static ServerSocket serverSocket;
@@ -24,12 +32,7 @@ public class Server {
     }
 
     private static void start(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.out.println("Error starting server: " + e.getMessage());
-            return;
-        }
+        serverSocket = createSSLServerSocket(port);
 
         System.out.println("Server is online on port " + port + "!");
 
@@ -159,4 +162,38 @@ public class Server {
             System.out.println("Error sending message: " + e.getMessage());
         }
     }
+
+    private static SSLServerSocket createSSLServerSocket(int port) {
+        SSLServerSocket sslServerSocket;
+
+        String working_dir = System.getProperty("user.dir");
+        String keyFilePath = working_dir + "/server/certificate/keystore.jks";
+        String keyPassword = "trabalhoCPD";
+
+        KeyStore ks;
+        KeyManagerFactory kmf;
+        SSLContext sslc;
+        
+
+        try {
+            ks = KeyStore.getInstance("JKS");
+            ks.load(new FileInputStream(keyFilePath), keyPassword.toCharArray());
+
+            kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(ks, keyPassword.toCharArray());
+
+            sslc = SSLContext.getInstance("TLS");
+            sslc.init(kmf.getKeyManagers(), null, null);
+
+            SSLServerSocketFactory sslServerSocketFactory = sslc.getServerSocketFactory();
+            sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
+
+        } catch (Exception e) {
+            System.out.println("Error creating SSL Server Socket: " + e.getMessage());
+            return null;
+        }
+
+        return sslServerSocket;
+    }
 }
+
