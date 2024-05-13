@@ -157,7 +157,7 @@ public class Player {
             scanner.close();
             FileWriter fileWriter = new FileWriter(file, true);
             BufferedWriter writer = new BufferedWriter(fileWriter);
-            writer.write(newUser + "," + newPassword);
+            writer.write(newUser + "," + newPassword + ",0");
             writer.newLine();
             writer.close();
             
