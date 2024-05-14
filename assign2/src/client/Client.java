@@ -1,42 +1,62 @@
 package client;
-import java.util.Scanner;
-import java.io.*;
+
+import java.util.*;
 
 public class Client {
-    
-
-
     public static void main(String[] args) {
+
         if (args.length < 2){
-            //System.out.println("Usage: <hostname> <port>");
+            System.out.println("Usage: <hostname> <port>");
             return;
-        } 
-        ClientStub calculatorStub = new ClientStub();
-        String hostname = args[0];
-        int port = Integer.parseInt(args[1]);
-
-        
-
-        calculatorStub.createSocket(hostname, port);
-        while (true) {
-            String input = selectOption();
-            if(input.equals("exit")) break;
-            if (!input.isEmpty()) {
-                calculatorStub.send(input);
-                String response = calculatorStub.receive();
-                System.out.println("Server response: " + response);
-            }
-
         }
 
-        try { Thread.sleep(100); } 
-        catch (Exception e) { System.out.println(e); }
+        ClientStub stub = new ClientStub();
+        String hostname = args[0];
+        int port = Integer.parseInt(args[1]);
         
-        //calculatorStub.send("Biombos indiscretos de alcatrao sujo");
-        //System.out.println(calculatorStub.receive());
+        try {
+            stub.createSocket(hostname, port);
+        } catch (Exception e) {
+            System.out.println("Could not connect to server.");
+            System.out.println("Exiting...");
+            return;
+        }
+
+        ClientState.State state = ClientState.State.AUTH_MENU;
+
+        while (true) {
+
+            String command = switch (state) {
+                case ClientState.State.AUTH_MENU -> authMenu();
+                case ClientState.State.REGISTER -> clientRegister();
+                case ClientState.State.LOGIN -> clientLogin();
+                case ClientState.State.MAIN_MENU -> "";
+                case ClientState.State.LOBBY -> "";
+                case ClientState.State.IN_GAME -> "";
+                default -> "";
+            };
+
+            if (command.equals("exit")) return;
+
+            try {
+                stub.send(command);
+            } catch (Exception e) {
+                continue;
+            }
+
+            String answer;
+
+            try {
+                answer = stub.receive();
+            } catch (Exception e) {
+                continue;
+            }
+
+            state = ClientState.transition(state, answer);
+        }
     }
 
-    public static String selectOption(){
+    public static String authMenu(){
         int option;
         do {
             Scanner scanner = new Scanner(System.in);
@@ -51,7 +71,7 @@ public class Client {
             switch (option) {
                 case 1:
                     System.out.println("Login selected");
-                    return clientlogin();
+                    return clientLogin();
                    
                 case 2:
                     System.out.println("Register selected");
@@ -73,7 +93,7 @@ public class Client {
         return "";
     }
 
-    public static String clientlogin() {
+    public static String clientLogin() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter username: ");
         String username = scanner.nextLine();

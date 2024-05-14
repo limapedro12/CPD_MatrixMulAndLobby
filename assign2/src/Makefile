@@ -4,11 +4,12 @@ make:
 	javac -d bin/ utils/*.java
 
 run_client:
-	java -cp bin/ client/Client
+	java -cp bin/ client/Client $(HOST) $(PORT)
 
 run_server:
 	java -cp bin/ server/Server $(PORT)
 
+HOST ?= localhost
 PORT ?= 8080
 
 clean:
