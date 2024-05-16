@@ -3,6 +3,14 @@
 
 Este trabalho, no ambito da unidade curricular Computação Paralela e Distribuida, tem como objetivo criar um sistem cliente-servidor utilizando sockets TCP em java que permita com que vários utlizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbys (Simple Lobby e Rank Lobby), que farão equipas de X jogadores, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes X utilizadores joguem o jogo entre eles.
 
+## Makefile
+
+Antes de executar qualquer outra ação, deve executar comando `make`, para compilar os ficheiros. 
+
+Depois, para correr o servidor, deve executar o comando `make run_server`. 
+
+Se em vez disso quiser correr o cliente, deve executar o comando `make run_client`.
+
 ## Arquitetura do Servidor
 
 ### Server.java:
