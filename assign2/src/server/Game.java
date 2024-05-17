@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Game implements Runnable {
 
     private List<Player> players;
+    int numGuesses = 0;
     private Map<Player, Integer> guessDists = new HashMap<>();
     private int totalPlayers;
 
@@ -37,26 +38,22 @@ public class Game implements Runnable {
 
             System.out.println("number: " + number);
 
-            Iterator<Player> it = players.iterator();
-            while (it.hasNext()) {
-                Player player = it.next();
-                int guess = -1;
+
+            long start = System.currentTimeMillis();
+
+            numGuesses = 0;
+
+            for(Player player : players)
                 player.send(player.getUsername() + ", Place your guess as an integer between 0 and 100.");
 
-                while (guess == -1) {
-                    String answer = null;
+            while (numGuesses != players.size()) {
+                Iterator<Player> it = players.iterator();
 
-                    long start = System.currentTimeMillis();
-                    boolean kick = true;
-                    while (System.currentTimeMillis() - start < 30000) {
-                        answer = player.receive();
-                        if (answer != null) {
-                            System.out.println("message: " + answer);
-                            kick = false;
-                            break;
-                        }
-                    }
-                    if (kick) {
+                while (it.hasNext()) {
+                    Player player = it.next();
+                    int guess = -1;
+
+                    if (System.currentTimeMillis() - start >= 30000) {
                         player.send(player.getUsername() + ", You were kicked of the game due to inactivity...");
                         player.setState(PlayerState.IDLE);
                         guessDists.remove(player);
@@ -64,16 +61,20 @@ public class Game implements Runnable {
                         break;
                     }
 
-                    try {
-                        guess = Integer.parseInt(answer);
-                        if (guess < 0 || guess > 100) throw new IllegalArgumentException();
-                    } catch (Exception e) {
-                        player.send(player.getUsername() + ", Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
-                        guess = -1;
+                    String answer = player.receive();
+                    if(answer != null){
+                        System.out.println("message: " + answer);
+                        numGuesses++;
+                        try {
+                            guess = Integer.parseInt(answer);
+                            if (guess < 0 || guess > 100) throw new IllegalArgumentException();
+                        } catch (Exception e) {
+                            player.send(player.getUsername() + ", Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
+                            guess = -1;
+                        }
+                        guessDists.put(player, Math.abs(guess-number));
                     }
                 }
-                
-                guessDists.put(player, Math.abs(guess-number));
             }
 
             notifyPlayers(generateRoundRank(number));
