@@ -30,7 +30,7 @@ public class Server {
 
         System.out.println("Server is online on port " + port + "!");
 
-        new Thread(rankLobby).start();
+        Thread.ofVirtual().start(rankLobby);
     }
 
     private static void listen() {

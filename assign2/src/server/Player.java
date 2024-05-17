@@ -2,6 +2,8 @@ package server;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -131,7 +133,6 @@ public class Player {
             System.out.println("Error: players.csv file not found.");
         }
         databaseLock.unlock();
-        }
         return false;
     }
 

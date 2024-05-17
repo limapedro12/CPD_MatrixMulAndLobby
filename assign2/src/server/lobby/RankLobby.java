@@ -103,7 +103,7 @@ public class RankLobby implements Runnable, Lobby {
                         players.add(playersWaiting.get(i));
                     }
                     Game game = new Game(players);
-                    new Thread(game).start();
+                    Thread.ofVirtual().start(game);
 
                     List<Integer> indicesToRemove = new ArrayList<Integer>(pSet);
                     Collections.sort(indicesToRemove, Collections.reverseOrder());

@@ -21,7 +21,7 @@ public class SimpleLobby implements Lobby {
             playersWaiting.add(player);
             System.out.println("Num Players: " + playersWaiting.size());
             if(playersWaiting.size() == this.numPlayers) {
-                new Thread(new Game(new ArrayList<Player>(playersWaiting))).start();
+                Thread.ofVirtual().start(new Game(new ArrayList<Player>(playersWaiting)));
                 playersWaiting.clear();
             }
         }
