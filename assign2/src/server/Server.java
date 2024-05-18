@@ -85,7 +85,7 @@ public class Server {
                 player = Player.getPlayerByToken(parts[1], socket);
 
                 if (player != null)
-                    player.send("Session restored.");
+                    player.send("SUCCESS: Session restored.");
                 else
                     sendDirectMessage("ERROR: Please authenticate.", socket);
             case "AUTH":    // AUTH <username> <password>
@@ -96,7 +96,7 @@ public class Server {
                 player = Player.login(parts[1], parts[2], socket);
 
                 if (player != null)
-                    player.send("Authenticated successfully.\nTOKEN = " + player.getToken());
+                    player.send("SUCCESS: Authenticated successfully. TOKEN = " + player.getToken());
                 else 
                     sendDirectMessage("ERROR: Account does not exist.", socket);
                 break;
@@ -110,7 +110,7 @@ public class Server {
                 if (player == null) 
                     sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    player.send("Registered succesfully. Please log in.");
+                    player.send("SUCCESS: Registered succesfully. Please log in.");
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 if (parts.length != 2) {
@@ -123,7 +123,7 @@ public class Server {
                     sendDirectMessage("ERROR: Account does not exist.", socket);
                 else if(player.getState() == PlayerState.IDLE){
                     simpleLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Simple Lobby");
+                    player.send("SUCCESS: Player added to Simple Lobby");
                 } else
                     player.send("ERROR: Player already in " + player.getState());
                 break;
@@ -139,7 +139,7 @@ public class Server {
                 else if(player.getState() == PlayerState.IDLE){
                     System.out.println("Player added to Rank Lobby");
                     rankLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Rank Lobby");
+                    player.send("SUCCESS: Player added to Rank Lobby");
                 } else
                     player.send("ERROR: Player already in " + player.getState());
                 break;
@@ -153,11 +153,11 @@ public class Server {
                 if (player != null) {
                     if (player.getState() == PlayerState.SIMPLE_LOBBY) {
                         simpleLobby.removePlayer(player);
-                        player.send("Player removed from Simple Lobby");
+                        player.send("SUCCESS: Player removed from Simple Lobby");
                         player.setState(PlayerState.IDLE);
                     } else if (player.getState() == PlayerState.RANK_LOBBY) {
                         rankLobby.removePlayer(player);
-                        player.send("Player removed from Rank Lobby");
+                        player.send("SUCCESS: Player removed from Rank Lobby");
                         player.setState(PlayerState.IDLE);
                     } else
                         player.send("ERROR: Player not in a lobby");

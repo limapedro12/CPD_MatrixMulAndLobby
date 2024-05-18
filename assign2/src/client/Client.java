@@ -3,6 +3,7 @@ package client;
 import java.util.*;
 
 public class Client {
+    public static String token;
     public static void main(String[] args) {
 
         if (args.length < 2){
@@ -30,37 +31,43 @@ public class Client {
                 case ClientState.State.AUTH_MENU -> authMenu();
                 case ClientState.State.REGISTER -> clientRegister();
                 case ClientState.State.LOGIN -> clientLogin();
-                case ClientState.State.MAIN_MENU -> "";
+                case ClientState.State.MAIN_MENU -> mainMenu();
                 case ClientState.State.LOBBY -> "";
                 case ClientState.State.IN_GAME -> "";
-                default -> "";
+                default -> "exit";
             };
 
             if (command.equals("exit")) return;
 
-            try {
-                stub.send(command);
-            } catch (Exception e) {
-                continue;
-            }
-
+            String[] parts = command.split(" ");
+            
             String answer;
 
-            try {
-                answer = stub.receive();
-            } catch (Exception e) {
-                continue;
+            if (parts[0].equals("goto")) {
+                answer = command;
+            } else {
+                try {
+                    stub.send(command);
+                } catch (Exception e) {
+                    continue;
+                }
+
+                try {
+                    answer = stub.receive();
+                } catch (Exception e) {
+                    continue;
+                }
             }
 
             state = ClientState.transition(state, answer);
         }
     }
 
-    public static String authMenu(){
+    private static String authMenu(){
         int option;
         do {
             Scanner scanner = new Scanner(System.in);
-            System.out.println("Welcome!!!\n Select an option:");
+            System.out.println("\nWelcome!!!\n Select an option:");
             System.out.println("----------------------------");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -71,11 +78,11 @@ public class Client {
             switch (option) {
                 case 1:
                     System.out.println("Login selected");
-                    return clientLogin();
+                    return "goto login";
                    
                 case 2:
                     System.out.println("Register selected");
-                    return clientRegister();
+                    return "goto register";
                    
                 case 3:
                     //Por implementar o hello
@@ -89,25 +96,54 @@ public class Client {
             }
             
 
-        }while(option < -1 || option > 3);
+        } while (option < -1 || option > 3);
         return "";
     }
 
-    public static String clientLogin() {
+    private static String clientLogin() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter username: ");
+        System.out.print("\nEnter username: ");
         String username = scanner.nextLine();
         System.out.print("Enter password: ");
         String password = scanner.nextLine();
         return "AUTH " + username + " " + password;
     }
 
-    public static String clientRegister() {
+    private static String clientRegister() {
         Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter new username: ");
+        System.out.print("\nEnter new username: ");
         String newUsername = scanner.nextLine();
         System.out.print("Enter new password: ");
         String newPassword = scanner.nextLine();
         return "REGISTER " + newUsername + " " + newPassword;
+    }
+
+    private static String mainMenu() {
+        int option;
+        do {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("\nMain Menu\n Select an option:");
+            System.out.println("----------------------------");
+            System.out.println("1. Join Simple Lobby");
+            System.out.println("2. Join Ranked Lobby");
+            System.out.println("0. Exit");
+            System.out.print("Option: ");
+            option = scanner.nextInt();
+            switch (option) {
+                case 1:
+                    System.out.println("Join Simple Lobby selected");
+                    return "SIMPLE " + token;
+                case 2:
+                    System.out.println("Join Ranked Lobby selected");
+                    return "RANK " + token;
+                case 0:
+                    System.out.println("Exiting...");
+                    return "exit";
+                default:
+                    System.out.println("Invalid option. Please select again.");
+                    break;
+            }
+        } while (option < -1 || option > 2);
+        return "";
     }
 }
