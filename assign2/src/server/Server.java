@@ -105,12 +105,12 @@ public class Server {
                     sendDirectMessage("ERROR: Usage: REGISTER <username> <password>", socket);
                     break;
                 }
-                player = Player.login(parts[1], parts[2], socket);
-
-                if (player == null) 
+                boolean registered = Player.register(parts[1], parts[2], socket);
+                
+                if (registered == false) 
                     sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    player.send("SUCCESS: Registered succesfully. Please log in.");
+                    sendDirectMessage("Registered succesfully. Please log in.",socket);
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 if (parts.length != 2) {
