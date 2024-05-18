@@ -69,7 +69,11 @@ public class RankLobby implements Runnable, Lobby {
             lock.lock();
 
             for (int i = 0; i < timeWaiting.size(); i++) {
-                timeWaiting.set(i, timeWaiting.get(i) + 1);
+                int playerTime = timeWaiting.get(i);
+                int points = playersWaiting.get(i).getPoints();
+                //To avoid overflow (INT_MAX = 2147483647, 214748364 ~= INT_MAX/10)
+                if(points + playerTime*step < 214748364)
+                    timeWaiting.set(i, timeWaiting.get(i) + 1);
             }
 
 
