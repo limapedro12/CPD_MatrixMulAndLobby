@@ -46,8 +46,12 @@ public class Game implements Runnable {
             for(Player player : players)
                 player.send(player.getUsername() + ", Place your guess as an integer between 0 and 100.");
 
-            while (numGuesses != players.size()) {
-                Iterator<Player> it = players.iterator();
+            HashSet<Player> playersYetToGuess = new HashSet<>(players);
+            for (Player player : players) 
+                playersYetToGuess.add(player);
+
+            while (playersYetToGuess.size() > 0) {
+                Iterator<Player> it = playersYetToGuess.iterator();
 
                 while (it.hasNext()) {
                     Player player = it.next();
@@ -58,7 +62,8 @@ public class Game implements Runnable {
                         player.setState(PlayerState.IDLE);
                         guessDists.remove(player);
                         it.remove();
-                        break;
+                        players.remove(player);
+                        continue;
                     }
 
                     String answer = player.receive();
@@ -73,6 +78,7 @@ public class Game implements Runnable {
                             guess = -1;
                         }
                         guessDists.put(player, Math.abs(guess-number));
+                        it.remove();
                     }
                 }
             }
@@ -83,7 +89,7 @@ public class Game implements Runnable {
             .min(Map.Entry.comparingByValue())
             .orElse(null);
         
-            if (entry != null) {
+            if (entry != null && players.size() >= 2) {
                 Player last = entry.getKey();
                 int points = totalPlayers - players.size();
                 guessDists.remove(last);
@@ -93,12 +99,14 @@ public class Game implements Runnable {
                 last.setState(PlayerState.IDLE);
             }
         }
-        Player winner = players.get(0);
-        winner.send(winner.getUsername() + ", You won. Congratulations! +" + totalPlayers + "points for you!");
-        // winner.incrementPoints(totalPlayers);
-        winner.setState(PlayerState.IDLE);
-        guessDists.clear();
-        players.clear();
+        if(players.size() == 1){
+            Player winner = players.get(0);
+            winner.send(winner.getUsername() + ", You won. Congratulations! +" + totalPlayers + "points for you!");
+            // winner.incrementPoints(totalPlayers);
+            winner.setState(PlayerState.IDLE);
+            guessDists.clear();
+            players.clear();
+        }
     }
 
     private String generateRoundRank(int number) {
