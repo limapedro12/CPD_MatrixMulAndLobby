@@ -36,7 +36,7 @@ public class RankLobby implements Runnable, Lobby {
     public RankLobby(int numPlayers, int step, boolean show) {
         this(numPlayers, step);
         this.show = show;
-        if(show) System.out.println("Rank Lobby created with " + numPlayers + " players and step " + step);
+        if(show) System.out.println("Rank Lobby created with " + numPlayers + " players needed to start a game and step " + step);
     }
 
     public void addPlayer(Player player) {
@@ -101,17 +101,19 @@ public class RankLobby implements Runnable, Lobby {
             }
 
             for(Set<Integer> pSet : playerSets) {
-                if(pSet.size() == numPlayers) {
+                if(pSet.size() >= numPlayers) {
+                    List<Integer> playerIndexes = new ArrayList<Integer>(pSet);
+
                     List<Player> players = new ArrayList<>();
-                    for(Integer i : pSet) {
-                        players.add(playersWaiting.get(i));
+                    for(int i = 0; i < numPlayers; i++) {
+                        int playerNum = playerIndexes.get(i);
+                        players.add(playersWaiting.get(playerNum));
                     }
                     Game game = new Game(players);
                     Thread.ofVirtual().start(game);
 
-                    List<Integer> indicesToRemove = new ArrayList<Integer>(pSet);
-                    Collections.sort(indicesToRemove, Collections.reverseOrder());
-                    for(int i : indicesToRemove) {
+                    Collections.sort(playerIndexes, Collections.reverseOrder());
+                    for(int i : playerIndexes) {
                         playersWaiting.remove(i);
                         timeWaiting.remove(i);
                         for(Set<Integer> set : playerSets) {
