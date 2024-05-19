@@ -1,14 +1,26 @@
 package client;
 
 import java.net.*;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import java.io.*;
  
 public class ClientStub {
     Socket socket;
     
     public void createSocket(String hostname, int port) throws UnknownHostException, IOException {
+        String working_dir = System.getProperty("user.dir");
+        String keyFilePath = working_dir + "/server/certificate/keystore.jks";
+        String keyPassword = "trabalhoCPD";
+
         try {
-            socket = new Socket(hostname, port);
+            System.setProperty("javax.net.ssl.trustStore", keyFilePath);
+            System.setProperty("javax.net.ssl.trustStorePassword", keyPassword);
+
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            socket = factory.createSocket(hostname, port);
         } catch (UnknownHostException ex) {
             throw ex;
         } catch (IOException ex) {
