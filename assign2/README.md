@@ -14,6 +14,7 @@ Se em vez disso quiser correr o cliente, deve executar o comando `make run_clien
 ## Arquitetura do Servidor
 
 ### Server.java:
+
 Esta class representa o servidor. Inicialmente apenas existe uma thread que é responsável por aceitar novas conecções. Sempre que uma nova conecção é estabelecida, uma nova thread é criada, que trata de todas as mensagens provenientes desse socket.
 
 Caso o servidor receba uma das seguintes mensgens através de um dos sockets, executa a respetiva ação.
@@ -53,6 +54,7 @@ Ação: Caso o jogador esteja num jogo, define o valor indicado como o seu guess
 Caso o servidor receba uma outra mensagem que não esteja listada a cima, o servidor responderá com `ERROR: Command: Invalid command.`.
 
 ### Player.java
+
 Esta class representa um jogador. 
 
 Além disso nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. Caso um jogador esteja inativo por X tempo, é eliminado deste conjunto, não podendo mais utilizar o seu token atual e tendo, por isso, que efetuar novamente login.
@@ -63,21 +65,27 @@ Embora o socket seja guardado nesta class, o jogador pode enviar mensagens atrav
 Todas as mensagens enviadas para o jogador serão enviadas para o último socket guardado.
 
 ### SimpleLobby.java
+
 Esta class é a implementação do lobby simples. 
 Qualquer jogador pode juntar-se a este lobby. Quando, no lobby, estiverem X jogadores, é iniciado um jogo com os mesmos, independentemente da sua pontuação, e o lobby passa a estar vazio.
 
 ### RankLobby.java
+
 Aqui é implementado o lobby por rank. 
 
 Este lobby tenta criar jogos com jogadores cujos pontos sejam similares, mas esta condição vai sendo gradualmente relaxada, de modo  a que os jogadores não tenham que esperar eternamente por um jogo. 
 
 Qualquer jogador pode juntar-se a este lobby. Ao fazê-lo, ser-lhe-á associado um raio de pesquisa de 0 pontos e a cada segundo o seu raio será incrementado em X pontos. 
 
-Além disso, a cada segundo, o RankLobby cria todos os conjuntos possiveis, em que parte do raio de pesquisa de todos os elementos o conjunto esteja contido no raio de pesquisa de todos os outros elementos.
+Além disso, a cada segundo, o RankLobby cria todos os conjuntos possiveis, c
 
 Se algum destes conjuntos contiver X jogadores, é iniciado um jogo com os mesmos, e estes jogadores são retirados do RankLobby.
 
+Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (sendo, por exemplo, um jogador com pontuacao de 2000 pontos e um raio de 300, o seu valor de entrada é 2300 e o valor de saida 1700). De seguida iteramos pela lista ordenada, e sempre que um valor de entrada aparece, esse jogador é adicionado à lista de intervalos abertos, sempre que um valor de saida aparece, esse jogador é removido da lista de intervalos abertos e uma copia deste conjunto é adicionado à lista de conjuntos conjunto esteja contido no raio de pesquisa de todos os outros elementos.
+
 ### Game.java
 
+### SSL
 
+Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
 
