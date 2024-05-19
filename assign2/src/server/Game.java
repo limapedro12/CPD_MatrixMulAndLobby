@@ -1,7 +1,6 @@
 package server;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class Game implements Runnable {
 
@@ -32,11 +31,11 @@ public class Game implements Runnable {
         notifyPlayers("STARTING GAME");
 
         while (players.size() > 1) {
-            notifyPlayers(players.size() + " players remaining. Please wait for your turn.");
+            notifyPlayers(players.size() + " players remaining.");
 
             int number = (int) (Math.random() * 101);
 
-            System.out.println("number: " + number);
+            System.out.println("Number = " + number);
 
             long start = System.currentTimeMillis();
 
@@ -88,7 +87,7 @@ public class Game implements Runnable {
             notifyPlayers(generateRoundRank(number));
 
             Map.Entry<Player, Integer> entry = guessDists.entrySet().stream()
-            .min(Map.Entry.comparingByValue())
+            .max(Map.Entry.comparingByValue())
             .orElse(null);
         
             if (entry != null && players.size() >= 2) {
@@ -114,17 +113,15 @@ public class Game implements Runnable {
     private String generateRoundRank(int number) {
         StringBuilder ret = new StringBuilder();
 
-        ret.append("The number was " + number + ".\n");
+        ret.append("Number=" + number);
 
-        AtomicInteger index = new AtomicInteger(0);
+        List<Map.Entry<Player, Integer>> sorted = this.guessDists.entrySet().stream().sorted(Map.Entry.comparingByValue()).toList();
 
-        guessDists.entrySet().stream()
-            .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
-            .forEach(entry -> {
-                ret.append("#" + index.getAndIncrement() + ": " + entry.getKey().getUsername() + ", distance = " + entry.getValue() + "\n");
-            });
+        for (int i = 0; i < sorted.size(); i++) {
+            Map.Entry<Player, Integer> entry = sorted.get(i);
+            ret.append("; #" + i + ":" + entry.getKey().getUsername() + ",dist=" + entry.getValue());
+        }
 
         return ret.toString();
     }
 }
-

@@ -19,7 +19,7 @@ Se em vez disso quiser correr o cliente, deve executar o comando `make run_clien
 
 ### Server.java:
 
-Esta class representa o servidor. Inicialmente apenas existe uma thread que é responsável por aceitar novas conecções. Sempre que uma nova conecção é estabelecida, uma nova thread é criada, que trata de todas as mensagens provenientes desse socket.
+Esta classe representa o servidor. Inicialmente apenas existe uma thread que é responsável por aceitar novas conecções. Sempre que uma nova conecção é estabelecida, uma nova thread é criada, que trata de todas as mensagens provenientes desse socket.
 
 Caso o servidor receba uma das seguintes mensagens através de um dos sockets, executa a respetiva ação.
 
@@ -55,7 +55,7 @@ Caso o servidor receba uma outra mensagem que não esteja listada a cima, o serv
 
 ### Player.java
 
-Esta class representa um jogador. 
+Esta classe representa um jogador. 
 
 Além disso, nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. 
 
@@ -66,7 +66,7 @@ Todas as mensagens enviadas para o jogador serão enviadas para o último socket
 
 ### SimpleLobby.java
 
-Esta class é a implementação do lobby simples. 
+Esta classe é a implementação do lobby simples. 
 Qualquer jogador pode juntar-se a este lobby. Quando, no lobby, estiverem o número de jogadores necessário, é iniciado um jogo com os mesmos, independentemente da sua pontuação, e o lobby passa a estar vazio.
 
 ### RankLobby.java
@@ -89,21 +89,23 @@ Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (
 
 ## Arquitetura do Cliente
 
-A classe Client é o ponto de entrada principal do client side. Ela gerencia a lógica de comunicação com o servidor e as transições de estado da aplicação Cliente. 
+A classe Client é o ponto de entrada principal do client side. Ela gerencia a lógica de comunicação com o servidor e as transições de estado da aplicação Cliente.
+
 ### Funcionalidades
-Autenticação e Registo
+
+#### Autenticação e Registo
 
 1. Menu de Autenticação: 
  - O cliente apresenta um menu inicial onde o usuário pode escolher entre fazer login, registrar um novo usuário, continuar um jogo existente, ou sair da aplicação.
  - Login: O usuário insere seu nome de usuário e senha para autenticar.
-- Registo: O usuário pode registrar um novo nome de usuário e senha.
+ - Registo: O usuário pode registrar um novo nome de usuário e senha.
 2. Menu Principal:
  - Após a autenticação, o usuário é apresentado com um menu principal onde pode escolher entrar em um lobby simples ou ranqueado, ou sair da aplicação.
 
 ### Exemplo de Execução
+
 Ao iniciar a aplicação, o usuário verá o menu de autenticação com opções para login, registro, continuar um jogo ou sair. Dependendo da escolha, a aplicação irá solicitar as informações necessárias e comunicar-se com o servidor para processar a ação. Após a autenticação, o usuário pode escolher entre diferentes lobbies de jogos no menu principal.
  
 ## SSL
 
 Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
-

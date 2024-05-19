@@ -2,6 +2,8 @@ package client;
 
 import java.util.*;
 
+@SuppressWarnings("resource")
+
 public class Client {
     public static String token;
     public static void main(String[] args) {
