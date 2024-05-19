@@ -1,15 +1,19 @@
 # Trabalho de Sistemas Distribuídos
 ## Computação Paralela e Distribuída
 
-Este trabalho, no âmbito da unidade curricular Computação Paralela e Distribuída, tem como objetivo criar um sistema cliente-servidor utilizando sockets TCP em Java que permita com que vários utilizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbies (Simple Lobby e Rank Lobby), que farão equipas de X jogadores, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes X utilizadores joguem o jogo entre eles.
+Este trabalho, no âmbito da unidade curricular Computação Paralela e Distribuída, tem como objetivo criar um sistema cliente-servidor utilizando sockets TCP em Java que permita com que vários utilizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbies (Simple Lobby e Rank Lobby), que farão equipas com o número de jogadores da especificado anteriormente, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes utilizadores joguem o jogo entre eles.
 
 ## Compilação e Execução
 
 Antes de executar qualquer outra ação, deve executar comando `make`, para compilar os ficheiros. 
 
-Depois, para correr o servidor, deve executar o comando `make run_server`. 
+Depois, para correr o servidor, deve executar o comando `make run_server`.
+
+É possivel também iniciar o servidor custumizando a porta e o número de jogadores necessários para iniciar um jogo, com `make run_server PORT=<PORT> NUM_PLAYERS=<NUM_PLAYERS>`.
 
 Se em vez disso quiser correr o cliente, deve executar o comando `make run_client`.
+
+É possivel também correr o cliente customizando o host e a porta à qual se deseja conectar, com `make run_client HOST=<HOST> PORT=<PORT>`.
 
 ## Arquitetura do Servidor
 
@@ -57,7 +61,7 @@ Caso o servidor receba uma outra mensagem que não esteja listada a cima, o serv
 
 Esta class representa um jogador. 
 
-Além disso, nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. Caso um jogador esteja inativo por X tempo, é eliminado deste conjunto, não podendo mais utilizar o seu token atual e tendo, por isso, que efetuar novamente login.
+Além disso, nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. 
 
 Em cada jogador é guardado, o seu username, o seu número de pontos, o seu token atual e o último socket através do qual o jogador comunicou com o servidor. A password apenas é guardada na base de dados.
 Embora o socket seja guardado nesta class, o jogador pode enviar mensagens através qualquer socket (desde que devidamente identificadas com o respetivo token). Caso este seja diferente do socket guardado, o mesmo será atualizado.
@@ -67,7 +71,7 @@ Todas as mensagens enviadas para o jogador serão enviadas para o último socket
 ### SimpleLobby.java
 
 Esta class é a implementação do lobby simples. 
-Qualquer jogador pode juntar-se a este lobby. Quando, no lobby, estiverem X jogadores, é iniciado um jogo com os mesmos, independentemente da sua pontuação, e o lobby passa a estar vazio.
+Qualquer jogador pode juntar-se a este lobby. Quando, no lobby, estiverem o número de jogadores necessário, é iniciado um jogo com os mesmos, independentemente da sua pontuação, e o lobby passa a estar vazio.
 
 ### RankLobby.java
 
@@ -75,13 +79,15 @@ Aqui é implementado o lobby por rank.
 
 Este lobby tenta criar jogos com jogadores cujos pontos sejam similares, mas esta condição vai sendo gradualmente relaxada, de modo que os jogadores não tenham que esperar eternamente por um jogo. 
 
-Qualquer jogador pode juntar-se a este lobby. Ao fazê-lo, ser-lhe-á associado um raio de pesquisa de 0 pontos e a cada segundo o seu raio será incrementado em X pontos. 
+Qualquer jogador pode juntar-se a este lobby. Ao fazê-lo, ser-lhe-á associado um raio de pesquisa de 0 pontos e a cada segundo o seu raio será incrementado em 5 pontos. 
 
-Além disso, a cada segundo, o RankLobby cria todos os conjuntos possiveis, c
+Além disso, a cada segundo, o RankLobby cria todos os conjuntos em que parte do raio de pesquisa esteja contido em todos os outros elementos destes conjuntos.
 
-Se algum destes conjuntos contiver X jogadores, é iniciado um jogo com os mesmos, e estes jogadores são retirados do RankLobby.
+Se algum destes conjuntos contiver o número de jogadores necessário, é iniciado um jogo com os mesmos, e estes jogadores são retirados do RankLobby.
 
-Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (sendo, por exemplo, um jogador com pontuacao de 2000 pontos e um raio de 300, o seu valor de entrada é 2300 e o valor de saida 1700). De seguida iteramos pela lista ordenada, e sempre que um valor de entrada aparece, esse jogador é adicionado à lista de intervalos abertos, sempre que um valor de saida aparece, esse jogador é removido da lista de intervalos abertos e uma cópia deste conjunto é adicionado à lista de conjuntos cujos raios de pesquisa estejam contidos em todos os outros intervalos do grupo.
+Este processo é executado por uma thread dedicada apenas ao Rank Lobby.
+
+Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (sendo, por exemplo, um jogador com pontuação de 2000 pontos e um raio de 300, o seu valor de entrada é 2300 e o valor de saida 1700). De seguida iteramos pela lista ordenada, e sempre que um valor de entrada aparece, esse jogador é adicionado à lista de intervalos abertos, sempre que um valor de saida aparece, esse jogador é removido da lista de intervalos abertos e uma cópia deste conjunto é adicionado à lista de conjuntos cujos raios de pesquisa estejam contidos em todos os outros intervalos do grupo.
 
 ### Game.java
 

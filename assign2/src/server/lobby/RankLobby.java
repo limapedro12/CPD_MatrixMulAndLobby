@@ -45,10 +45,13 @@ public class RankLobby implements Runnable, Lobby {
         playersWaiting.add(player);
         timeWaiting.add(1);
         lock.unlock();
+
+        if(show){
+                System.out.println("Number of players waiting on Rank Lobby: " + playersWaiting.size());
+        }
     }
 
     public void run() {
-        int time = 0;
         while(true) {
             try {
                 Thread.sleep(1000);
@@ -57,16 +60,12 @@ public class RankLobby implements Runnable, Lobby {
                  break;
             }
 
-            if(show){
-                if(!playersWaiting.isEmpty()){
-                    System.out.println("Players waiting: " + playersWaiting.size() + " Time waiting: " + time++);
-                } else {
-                    time = 0;
-                    continue;
-                }
-            }
-
             lock.lock();
+
+            if(playersWaiting.isEmpty()){
+                lock.unlock();
+                continue;
+            }
 
             for (int i = 0; i < timeWaiting.size(); i++) {
                 int playerTime = timeWaiting.get(i);
@@ -122,14 +121,6 @@ public class RankLobby implements Runnable, Lobby {
                         }
                     }
                 }
-            }
-            
-            if(show){
-                if(!playersWaiting.isEmpty()){
-                        System.out.println("List Ordered: " + listOrdered);
-                        System.out.println("Player Sets: " + playerSets);
-                        System.out.println("Players waiting: " + playersWaiting);
-                    }
             }
 
             lock.unlock();  

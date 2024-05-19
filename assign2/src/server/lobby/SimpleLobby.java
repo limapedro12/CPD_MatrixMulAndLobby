@@ -19,7 +19,7 @@ public class SimpleLobby implements Lobby {
         synchronized (playersWaiting) {
             player.setState(PlayerState.SIMPLE_LOBBY);
             playersWaiting.add(player);
-            System.out.println("Num Players: " + playersWaiting.size());
+            System.out.println("Number of players waiting on Simple Lobby: " + playersWaiting.size());
             if(playersWaiting.size() == this.numPlayers) {
                 Thread.ofVirtual().start(new Game(new ArrayList<Player>(playersWaiting)));
                 playersWaiting.clear();
