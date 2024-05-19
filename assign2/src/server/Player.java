@@ -44,11 +44,13 @@ public class Player {
     public static Player login(String username, String password, Socket socket) {
         lockLoggedPlayers.lock();
         Player player;
+        String point = existsInDatabase(username, password);
         if (loggedPlayers.containsKey(new Pair<String, String>(username, password))) {
             player = loggedPlayers.get(new Pair<String, String>(username, password));
-        } else if (existsInDatabase(username, password)) {
+        } 
+        else if ( point != null) {
             // player = new Player(username, password, (int) (Integer.parseInt(username)* Math.pow(10, Integer.parseInt(username))));
-            player = new Player(username, password, 0);
+            player = new Player(username, password, Integer.parseInt(point));
 
             player.lockPlayer.lock();
             player.generateToken();
@@ -105,7 +107,7 @@ public class Player {
         return token;
     }
 
-    private static boolean existsInDatabase(String username, String password) {
+    private static String existsInDatabase(String username, String password) {
         databaseLock.lock();
         try {
             String working_dir = System.getProperty("user.dir");
@@ -116,10 +118,11 @@ public class Player {
                 String[] data = line.split(",");
                 String storedUsername = data[0];
                 String storedPassword = data[1];
+                
                 if (storedUsername.equals(username) && storedPassword.equals(password)) {
                     scanner.close();
                     databaseLock.unlock();
-                    return true;
+                    return data[2];
                 }
             }
             scanner.close();
@@ -127,7 +130,7 @@ public class Player {
             System.out.println("Error: players.csv file not found.");
         }
         databaseLock.unlock();
-        return false;
+        return null;
     }
 
     public static boolean register(String newUser, String newPassword, Socket socket){
