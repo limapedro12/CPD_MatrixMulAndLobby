@@ -1,7 +1,7 @@
-# Trabalho de Sistemas Distribuidos
+# Trabalho de Sistemas Distribuídos
 ## Computação Paralela e Distribuída
 
-Este trabalho, no ambito da unidade curricular Computação Paralela e Distribuida, tem como objetivo criar um sistem cliente-servidor utilizando sockets TCP em java que permita com que vários utlizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbys (Simple Lobby e Rank Lobby), que farão equipas de X jogadores, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes X utilizadores joguem o jogo entre eles.
+Este trabalho, no âmbito da unidade curricular Computação Paralela e Distribuída, tem como objetivo criar um sistema cliente-servidor utilizando sockets TCP em Java que permita com que vários utilizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbies (Simple Lobby e Rank Lobby), que farão equipas de X jogadores, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes X utilizadores joguem o jogo entre eles.
 
 ## Makefile
 
@@ -17,7 +17,7 @@ Se em vez disso quiser correr o cliente, deve executar o comando `make run_clien
 
 Esta class representa o servidor. Inicialmente apenas existe uma thread que é responsável por aceitar novas conecções. Sempre que uma nova conecção é estabelecida, uma nova thread é criada, que trata de todas as mensagens provenientes desse socket.
 
-Caso o servidor receba uma das seguintes mensgens através de um dos sockets, executa a respetiva ação.
+Caso o servidor receba uma das seguintes mensagens através de um dos sockets, executa a respetiva ação.
 
 `HELLO <token>`
 
@@ -57,7 +57,7 @@ Caso o servidor receba uma outra mensagem que não esteja listada a cima, o serv
 
 Esta class representa um jogador. 
 
-Além disso nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. Caso um jogador esteja inativo por X tempo, é eliminado deste conjunto, não podendo mais utilizar o seu token atual e tendo, por isso, que efetuar novamente login.
+Além disso, nesta class é guardado, de forma estática, o conjunto de todos os jogadores que tenham interagido com o servidor recentemente. Caso um jogador esteja inativo por X tempo, é eliminado deste conjunto, não podendo mais utilizar o seu token atual e tendo, por isso, que efetuar novamente login.
 
 Em cada jogador é guardado, o seu username, o seu número de pontos, o seu token atual e o último socket através do qual o jogador comunicou com o servidor. A password apenas é guardada na base de dados.
 Embora o socket seja guardado nesta class, o jogador pode enviar mensagens através qualquer socket (desde que devidamente identificadas com o respetivo token). Caso este seja diferente do socket guardado, o mesmo será atualizado.
@@ -73,7 +73,7 @@ Qualquer jogador pode juntar-se a este lobby. Quando, no lobby, estiverem X joga
 
 Aqui é implementado o lobby por rank. 
 
-Este lobby tenta criar jogos com jogadores cujos pontos sejam similares, mas esta condição vai sendo gradualmente relaxada, de modo  a que os jogadores não tenham que esperar eternamente por um jogo. 
+Este lobby tenta criar jogos com jogadores cujos pontos sejam similares, mas esta condição vai sendo gradualmente relaxada, de modo que os jogadores não tenham que esperar eternamente por um jogo. 
 
 Qualquer jogador pode juntar-se a este lobby. Ao fazê-lo, ser-lhe-á associado um raio de pesquisa de 0 pontos e a cada segundo o seu raio será incrementado em X pontos. 
 
@@ -81,11 +81,10 @@ Além disso, a cada segundo, o RankLobby cria todos os conjuntos possiveis, c
 
 Se algum destes conjuntos contiver X jogadores, é iniciado um jogo com os mesmos, e estes jogadores são retirados do RankLobby.
 
-Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (sendo, por exemplo, um jogador com pontuacao de 2000 pontos e um raio de 300, o seu valor de entrada é 2300 e o valor de saida 1700). De seguida iteramos pela lista ordenada, e sempre que um valor de entrada aparece, esse jogador é adicionado à lista de intervalos abertos, sempre que um valor de saida aparece, esse jogador é removido da lista de intervalos abertos e uma copia deste conjunto é adicionado à lista de conjuntos conjunto esteja contido no raio de pesquisa de todos os outros elementos.
+Para criar os conjuntos, o programa ordena todos os valores de entrada e saida (sendo, por exemplo, um jogador com pontuacao de 2000 pontos e um raio de 300, o seu valor de entrada é 2300 e o valor de saida 1700). De seguida iteramos pela lista ordenada, e sempre que um valor de entrada aparece, esse jogador é adicionado à lista de intervalos abertos, sempre que um valor de saida aparece, esse jogador é removido da lista de intervalos abertos e uma cópia deste conjunto é adicionado à lista de conjuntos cujos raios de pesquisa estejam contidos em todos os outros intervalos do grupo.
 
 ### Game.java
 
 ### SSL
 
-Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
-
+Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
