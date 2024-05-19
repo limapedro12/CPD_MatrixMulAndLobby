@@ -3,7 +3,15 @@ package server;
 import java.io.*;
 import java.net.*;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLServerSocket;
+import javax.net.ssl.SSLServerSocketFactory;
+import java.security.KeyStore;
+
 import server.lobby.*;
+
+// Para conectar utiliza o client ou "openssl s_client -connect localhost:<port>""
 
 public class Server {
     private static ServerSocket serverSocket;
@@ -25,12 +33,7 @@ public class Server {
     }
 
     private static void start(int port) {
-        try {
-            serverSocket = new ServerSocket(port);
-        } catch (IOException e) {
-            System.out.println("Error starting server: " + e.getMessage());
-            return;
-        }
+        serverSocket = createSSLServerSocket(port);
 
         System.out.println("Server is online on port " + port + "!");
 
@@ -89,7 +92,7 @@ public class Server {
                 player = Player.getPlayerByToken(parts[1], socket);
 
                 if (player != null)
-                    player.send("Session restored.");
+                    player.send("SUCCESS: Session restored.");
                 else
                     sendDirectMessage("ERROR: Please authenticate.", socket);
             case "AUTH":    // AUTH <username> <password>
@@ -100,7 +103,7 @@ public class Server {
                 player = Player.login(parts[1], parts[2], socket);
 
                 if (player != null)
-                    player.send("Authenticated successfully.\nTOKEN = " + player.getToken());
+                    player.send("SUCCESS: Authenticated successfully. TOKEN = " + player.getToken());
                 else 
                     sendDirectMessage("ERROR: Account does not exist.", socket);
                 break;
@@ -109,12 +112,12 @@ public class Server {
                     sendDirectMessage("ERROR: Usage: REGISTER <username> <password>", socket);
                     break;
                 }
-                player = Player.login(parts[1], parts[2], socket);
-
-                if (player == null) 
+                boolean registered = Player.register(parts[1], parts[2], socket);
+                
+                if (registered == false) 
                     sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    player.send("Registered succesfully. Please log in.");
+                    sendDirectMessage("SUCCESS: Registered succesfully. Please log in.", socket);
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 if (parts.length != 2) {
@@ -127,7 +130,7 @@ public class Server {
                     sendDirectMessage("ERROR: Account does not exist.", socket);
                 else if(player.getState() == PlayerState.IDLE){
                     simpleLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Simple Lobby");
+                    player.send("SUCCESS: Player added to Simple Lobby");
                 } else
                     player.send("ERROR: Player already in " + player.getState());
                 break;
@@ -143,7 +146,7 @@ public class Server {
                 else if(player.getState() == PlayerState.IDLE){
                     System.out.println("Player added to Rank Lobby");
                     rankLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Rank Lobby");
+                    player.send("SUCCESS: Player added to Rank Lobby");
                 } else
                     player.send("ERROR: Player already in " + player.getState());
                 break;
@@ -157,11 +160,11 @@ public class Server {
                 if (player != null) {
                     if (player.getState() == PlayerState.SIMPLE_LOBBY) {
                         simpleLobby.removePlayer(player);
-                        player.send("Player removed from Simple Lobby");
+                        player.send("SUCCESS: Player removed from Simple Lobby");
                         player.setState(PlayerState.IDLE);
                     } else if (player.getState() == PlayerState.RANK_LOBBY) {
                         rankLobby.removePlayer(player);
-                        player.send("Player removed from Rank Lobby");
+                        player.send("SUCCESS: Player removed from Rank Lobby");
                         player.setState(PlayerState.IDLE);
                     } else
                         player.send("ERROR: Player not in a lobby");
@@ -207,4 +210,38 @@ public class Server {
             System.out.println("Error sending message: " + e.getMessage());
         }
     }
+
+    private static SSLServerSocket createSSLServerSocket(int port) {
+        SSLServerSocket sslServerSocket;
+
+        String working_dir = System.getProperty("user.dir");
+        String keyFilePath = working_dir + "/server/certificate/keystore.jks";
+        String keyPassword = "trabalhoCPD";
+
+        KeyStore ks;
+        KeyManagerFactory kmf;
+        SSLContext sslc;
+        
+
+        try {
+            ks = KeyStore.getInstance("JKS");
+            ks.load(new FileInputStream(keyFilePath), keyPassword.toCharArray());
+
+            kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(ks, keyPassword.toCharArray());
+
+            sslc = SSLContext.getInstance("TLS");
+            sslc.init(kmf.getKeyManagers(), null, null);
+
+            SSLServerSocketFactory sslServerSocketFactory = sslc.getServerSocketFactory();
+            sslServerSocket = (SSLServerSocket) sslServerSocketFactory.createServerSocket(port);
+
+        } catch (Exception e) {
+            System.out.println("Error creating SSL Server Socket: " + e.getMessage());
+            return null;
+        }
+
+        return sslServerSocket;
+    }
 }
+
