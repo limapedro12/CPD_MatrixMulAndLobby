@@ -153,11 +153,11 @@ public class Server {
                 if (player != null) {
                     if (player.getState() == PlayerState.SIMPLE_LOBBY) {
                         simpleLobby.removePlayer(player);
-                        player.send("SUCCESS: Player removed from Simple Lobby");
+                        player.send("REMOVED: Player removed from Simple Lobby");
                         player.setState(PlayerState.IDLE);
                     } else if (player.getState() == PlayerState.RANK_LOBBY) {
                         rankLobby.removePlayer(player);
-                        player.send("SUCCESS: Player removed from Rank Lobby");
+                        player.send("REMOVED: Player removed from Rank Lobby");
                         player.setState(PlayerState.IDLE);
                     } else
                         player.send("ERROR: Player not in a lobby");

@@ -63,12 +63,15 @@ public class ClientState {
                 default -> initial;
             };
             
+            if (ret == State.LOBBY) System.out.println("Press ESC at any time to leave the lobby.");
+            
         } else if (initial == State.LOBBY) {
 
             System.out.println(input);
 
             ret = switch (parts[0]) {
                 case "STARTING" -> State.IN_GAME_WAIT;
+                case "REMOVED:" -> State.MAIN_MENU;
                 default -> initial;
             };
 

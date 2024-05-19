@@ -1,6 +1,9 @@
 package client;
 
+import java.awt.event.KeyEvent;
 import java.util.*;
+
+import utils.Keyboard;
 
 @SuppressWarnings("resource")
 
@@ -34,7 +37,7 @@ public class Client {
                 case ClientState.State.REGISTER -> clientRegister();
                 case ClientState.State.LOGIN -> clientLogin();
                 case ClientState.State.MAIN_MENU -> mainMenu();
-                case ClientState.State.LOBBY -> "wait";
+                case ClientState.State.LOBBY -> lobby();
                 case ClientState.State.IN_GAME_WAIT -> "wait";
                 case ClientState.State.IN_GAME_PLAY -> play();
                 default -> "exit";
@@ -164,6 +167,12 @@ public class Client {
             }
         } while (option < -1 || option > 2);
         return "";
+    }
+
+    private static String lobby() {
+        if (Keyboard.pressedKey() == KeyEvent.VK_ESCAPE)
+            return "LEAVE_LOBBY " + token;
+        else return "wait";
     }
 
     private static String play() {

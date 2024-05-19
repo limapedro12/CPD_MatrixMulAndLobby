@@ -109,3 +109,7 @@ Ao iniciar a aplicação, o usuário verá o menu de autenticação com opções
 ## SSL
 
 Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
+
+## Nota
+
+O mecanismo de detação de tecla pressionada presente na classe Keyboard foi adaptado do Stack Overflow (https://stackoverflow.com/questions/18037576/how-do-i-check-if-the-user-is-pressing-a-key), dado a complexidade do mesmo.
