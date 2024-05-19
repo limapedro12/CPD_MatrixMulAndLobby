@@ -1,5 +1,5 @@
 TODO
 
 - increment points
-- esquecer HELLO?
-- resource leaks, Client.java
+- esquecer HELLO? se sim, que comando manda o servidor para restaurar estado?
+- leave lobby?

@@ -108,7 +108,6 @@ public class Client {
     }
 
     private static String clientLogin() {
-        
         Scanner scanner = new Scanner(System.in);
         System.out.print("\nEnter username: ");
         String username = scanner.nextLine();
@@ -118,7 +117,6 @@ public class Client {
     }
 
     private static String clientRegister() {
-        
         Scanner scanner = new Scanner(System.in);
         System.out.print("\nEnter new username: ");
         String newUsername = scanner.nextLine();
