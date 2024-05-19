@@ -227,4 +227,8 @@ public class Player {
         this.lockPlayer.unlock();
         return retPoints;
     }
+
+    
+
+    public void incrementPoints() {}
 }

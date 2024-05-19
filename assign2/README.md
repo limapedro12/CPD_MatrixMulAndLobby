@@ -3,7 +3,7 @@
 
 Este trabalho, no âmbito da unidade curricular Computação Paralela e Distribuída, tem como objetivo criar um sistema cliente-servidor utilizando sockets TCP em Java que permita com que vários utilizadores joguem o jogo "Quem acerta mais perto". Para isso, este sistema permite que os jogadores se autentiquem e, depois, se juntem a um de dois lobbies (Simple Lobby e Rank Lobby), que farão equipas de X jogadores, de formas distintas. Uma vez formada a equipa, uma nova instância do Game é criada, o que permite com que estes X utilizadores joguem o jogo entre eles.
 
-## Makefile
+## Compilação e Execução
 
 Antes de executar qualquer outra ação, deve executar comando `make`, para compilar os ficheiros. 
 
@@ -97,10 +97,11 @@ Autenticação e Registo
 - Registo: O usuário pode registrar um novo nome de usuário e senha.
 2. Menu Principal:
  - Após a autenticação, o usuário é apresentado com um menu principal onde pode escolher entrar em um lobby simples ou ranqueado, ou sair da aplicação.
+
+### Exemplo de Execução
+Ao iniciar a aplicação, o usuário verá o menu de autenticação com opções para login, registro, continuar um jogo ou sair. Dependendo da escolha, a aplicação irá solicitar as informações necessárias e comunicar-se com o servidor para processar a ação. Após a autenticação, o usuário pode escolher entre diferentes lobbies de jogos no menu principal.
  
 ## SSL
 
 Todas as comunicações entre o servidor e cliente utilizam o protocolo Secure Sockets Layer (SSL), através da biblioteca SSLSocket, de modo a manter todas as mensagens seguras, principalmente as referentes à autenticação e registo dos jogadores.
 
-### Exemplo de Execução
-Ao iniciar a aplicação, o usuário verá o menu de autenticação com opções para login, registro, continuar um jogo ou sair. Dependendo da escolha, a aplicação irá solicitar as informações necessárias e comunicar-se com o servidor para processar a ação. Após a autenticação, o usuário pode escolher entre diferentes lobbies de jogos no menu principal.

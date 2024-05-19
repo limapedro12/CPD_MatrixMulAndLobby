@@ -62,6 +62,7 @@ public class Game implements Runnable {
                         guessDists.remove(player);
                         it.remove();
                         players.remove(player);
+                        Player.logout(player);
                         continue;
                     }
 

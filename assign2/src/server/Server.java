@@ -54,7 +54,7 @@ public class Server {
     }
 
     private static void listenToSocket(Socket socket) {
-        while (true) {
+        while (socket.isConnected()) {
             try {
                 InputStream input = socket.getInputStream();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(input));
@@ -65,7 +65,7 @@ public class Server {
                 }
             
             } catch (IOException e) {
-                System.out.println("Error reading message: " + e.getMessage());
+                System.out.println("Connection with client terminated");
                 break;
             }
         }
@@ -192,6 +192,17 @@ public class Server {
 
                 if (player != null && player.getState() == PlayerState.GAME)
                     player.setLastMessage(parts[2]);
+                else
+                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
+                break;
+            case "LOGOUT":  // LOGOUT <token>
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Usage: LOGOUT <token>", socket);
+                }
+
+                player = Player.getPlayerByToken(parts[1], socket);
+
+                if (player != null) Player.logout(player);
                 else
                     sendDirectMessage("ERROR: Token: Invalid token.", socket);
                 break;
