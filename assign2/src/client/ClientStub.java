@@ -3,25 +3,20 @@ package client;
 import java.net.*;
 import java.io.*;
  
-/**
- * This program demonstrates a simple TCP/IP socket client.
- *
- * @author www.codejava.net
- */
 public class ClientStub {
     Socket socket;
     
-    public void createSocket(String hostname, int port){
+    public void createSocket(String hostname, int port) throws UnknownHostException, IOException {
         try {
             socket = new Socket(hostname, port);
         } catch (UnknownHostException ex) {
-            System.out.println("Server not found: " + ex.getMessage());
+            throw ex;
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
     }
 
-    public void send(String message) {
+    public void send(String message) throws IOException {
         try {
 
             OutputStream output = socket.getOutputStream();
@@ -29,11 +24,11 @@ public class ClientStub {
             writer.println(message);
  
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
     }
  
-    public String receive() {
+    public String receive() throws IOException {
         String message = "";
  
         try {
@@ -43,11 +38,9 @@ public class ClientStub {
             message = reader.readLine();
  
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
 
         return message;
     }
-
-    
 }

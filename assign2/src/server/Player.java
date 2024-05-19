@@ -1,10 +1,6 @@
 package server;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +30,8 @@ public class Player {
     private String password;
 
     private PlayerState state = PlayerState.IDLE;
+
+    private String lastMessage = null;
 
     private int points = 0;
 
@@ -96,7 +94,7 @@ public class Player {
 
     private void generateToken() {
         this.lockPlayer.lock();
-        this.currentToken = this.username; //+ Integer.toString((int) (Math.random() * 1000000));
+        this.currentToken = this.username + Integer.toString((int) (Math.random() * 1000000));
         this.lockPlayer.unlock();
     }
 
@@ -132,6 +130,43 @@ public class Player {
         return false;
     }
 
+    public static boolean register(String newUser, String newPassword, Socket socket){
+        databaseLock.lock();
+        try {
+            String working_dir = System.getProperty("user.dir");
+            File file = new File(working_dir + "/server/storage/players.csv");
+            Scanner scanner = new Scanner(file);
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] data = line.split(",");
+                String storedUsername = data[0];
+               
+                if (storedUsername.equals(newUser)) { //check if userName already exists
+                    scanner.close();
+                    return false;
+                    }
+            }
+            //if doesnt exist, add new user with password
+            scanner.close();
+            FileWriter fileWriter = new FileWriter(file, true);
+            BufferedWriter writer = new BufferedWriter(fileWriter);
+            writer.write(newUser + "," + newPassword + ",0");
+            writer.newLine();
+            writer.close();
+            
+            return true;
+            
+        } catch (FileNotFoundException e) {
+        System.out.println("Error: players.csv file not found.");
+        } catch (IOException e) {
+        System.out.println("Error: IOException occurred while accessing players.csv.");
+        } finally {
+        databaseLock.unlock(); // Sempre chame unlock() no bloco finally
+        }
+
+        return false;
+    }
+
     public void send(String message) {
         this.lockPlayer.lock();
         try {
@@ -158,8 +193,18 @@ public class Player {
         this.lockPlayer.unlock();
     }
 
+    public void setLastMessage(String message) {
+        this.lockPlayer.lock();
+        this.lastMessage = message;
+        this.lockPlayer.unlock();
+    }
+
     public String receive() {
-        throw new UnsupportedOperationException("Not yet implemented.");
+        this.lockPlayer.lock();
+        String ret = this.lastMessage;
+        this.lastMessage = null;
+        this.lockPlayer.unlock();
+        return ret;
     }
 
     public String getUsername() {

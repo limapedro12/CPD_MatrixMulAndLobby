@@ -2,7 +2,6 @@ package server;
 
 import java.io.*;
 import java.net.*;
-import java.util.*;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -19,8 +18,6 @@ public class Server {
 
     private static SimpleLobby simpleLobby = new SimpleLobby(3);
     private static RankLobby rankLobby = new RankLobby(3, 100, true);
-
-    private static List<Socket> userSockets = new ArrayList<Socket>();
 
     public static void main(String[] args) {
         if (args.length < 1) return;
@@ -83,72 +80,119 @@ public class Server {
         Player player = null;
 
         switch (command) {
+            case "HELLO":   // HELLO <token>
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
+                    break;
+                }
+                player = Player.getPlayerByToken(parts[1], socket);
+
+                if (player != null)
+                    player.send("SUCCESS: Session restored.");
+                else
+                    sendDirectMessage("ERROR: Please authenticate.", socket);
             case "AUTH":    // AUTH <username> <password>
+                if (parts.length != 3) {
+                    sendDirectMessage("ERROR: Usage: AUTH <username> <password>", socket);
+                    break;
+                }
                 player = Player.login(parts[1], parts[2], socket);
 
                 if (player != null)
-                    player.send("Authenticated successfully.\nTOKEN = " + player.getToken());
+                    player.send("SUCCESS: Authenticated successfully. TOKEN = " + player.getToken());
                 else 
-                    sendDirectMessage("Account does not exist.", socket);
+                    sendDirectMessage("ERROR: Account does not exist.", socket);
                 break;
             case "REGISTER":    // REGISTER <username> <password>
-                player = Player.login(parts[1], parts[2], socket);
-                if (player == null) 
-                    sendDirectMessage("Account already exists.", socket);
+                if (parts.length != 3) {
+                    sendDirectMessage("ERROR: Usage: REGISTER <username> <password>", socket);
+                    break;
+                }
+                boolean registered = Player.register(parts[1], parts[2], socket);
+                
+                if (registered == false) 
+                    sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    player.send("Registered succesfully. Please log in.");
+                    sendDirectMessage("Registered succesfully. Please log in.",socket);
                 break;
             case "SIMPLE":  // SIMPLE <token>
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Usage: SIMPLE <token>", socket);
+                    break;
+                }
                 player = Player.getPlayerByToken(parts[1], socket);
 
                 if (player == null)
-                    sendDirectMessage("Account does not exist.", socket);
+                    sendDirectMessage("ERROR: Account does not exist.", socket);
                 else if(player.getState() == PlayerState.IDLE){
                     simpleLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Simple Lobby");
+                    player.send("SUCCESS: Player added to Simple Lobby");
                 } else
-                    player.send("Player already in " + player.getState());
+                    player.send("ERROR: Player already in " + player.getState());
                 break;
             case "RANK":    // RANK <token>
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Usage: RANK <token>", socket);
+                    break;
+                }
                 player = Player.getPlayerByToken(parts[1], socket);
 
                 if (player == null)
-                    sendDirectMessage("Account does not exist.", socket);
+                    sendDirectMessage("ERROR: Account does not exist.", socket);
                 else if(player.getState() == PlayerState.IDLE){
                     System.out.println("Player added to Rank Lobby");
                     rankLobby.addPlayer(Player.getPlayerByToken(parts[1], socket));
-                    player.send("Player added to Rank Lobby");
+                    player.send("SUCCESS: Player added to Rank Lobby");
                 } else
-                    player.send("Player already in " + player.getState());
+                    player.send("ERROR: Player already in " + player.getState());
                 break;
             case "LEAVE_LOBBY":
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Usage: LEAVE_LOBBY <token>", socket);
+                    break;
+                }
                 player = Player.getPlayerByToken(parts[1], socket);
+
                 if (player != null) {
                     if (player.getState() == PlayerState.SIMPLE_LOBBY) {
                         simpleLobby.removePlayer(player);
-                        player.send("Player removed from Simple Lobby");
+                        player.send("SUCCESS: Player removed from Simple Lobby");
                         player.setState(PlayerState.IDLE);
                     } else if (player.getState() == PlayerState.RANK_LOBBY) {
                         rankLobby.removePlayer(player);
-                        player.send("Player removed from Rank Lobby");
+                        player.send("SUCCESS: Player removed from Rank Lobby");
                         player.setState(PlayerState.IDLE);
-                    } else {
-                        player.send("Player not in a lobby");
-                    }
-                } else {
-                    sendDirectMessage("Invalid token.", socket);
-                }
+                    } else
+                        player.send("ERROR: Player not in a lobby");
+                } else
+                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
                 break;
-            case "POINTS":
-                player = Player.getPlayerByToken(parts[1], socket);
-                if (player != null) {
-                    player.send("You have " + player.getPoints() + " points.");
-                } else {
-                    sendDirectMessage("Invalid token.", socket);
+            case "POINTS":  // POINTS <token>
+                if (parts.length != 2) {
+                    sendDirectMessage("ERROR: Usage: POINTS <token>", socket);
+                    break;
                 }
+                player = Player.getPlayerByToken(parts[1], socket);
+
+                if (player != null)
+                    player.send("You have " + player.getPoints() + " points.");
+                else
+                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
+                break;
+            case "PLAY":    // PLAY <token> <guess>
+                if (parts.length != 3) {
+                    sendDirectMessage("ERROR: Usage: PLAY <token> <guess>", socket);
+                    break;
+                }
+                player = Player.getPlayerByToken(parts[1], socket);
+
+                if (player != null && player.getState() == PlayerState.GAME)
+                    player.setLastMessage(parts[2]);
+                else
+                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
                 break;
             default:
-                sendDirectMessage("Invalid command.", socket);
+                sendDirectMessage("ERROR: Command: Invalid command.", socket);
                 break;
         }
     }
