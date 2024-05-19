@@ -73,15 +73,16 @@ public class Client {
     private static String authMenu(){
         int option;
         do {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("\nWelcome!!!\n Select an option:");
-            System.out.println("----------------------------");
-            System.out.println("1. Login");
-            System.out.println("2. Register");
-            System.out.println("3. Continue a game");
-            System.out.println("0. Exit");
-            System.out.print("Option: ");
-            option = scanner.nextInt();
+            try (Scanner scanner = new Scanner(System.in)) {
+                System.out.println("\nWelcome!!!\n Select an option:");
+                System.out.println("----------------------------");
+                System.out.println("1. Login");
+                System.out.println("2. Register");
+                System.out.println("3. Continue a game");
+                System.out.println("0. Exit");
+                System.out.print("Option: ");
+                option = scanner.nextInt();
+            }
             switch (option) {
                 case 1:
                     System.out.println("Login selected");
@@ -108,37 +109,38 @@ public class Client {
     }
 
     private static String clientLogin() {
-        
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEnter username: ");
-        String username = scanner.nextLine();
-        System.out.print("Enter password: ");
-        String password = scanner.nextLine();
-        return "AUTH " + username + " " + password;
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("\nEnter username: ");
+            String username = scanner.nextLine();
+            System.out.print("Enter password: ");
+            String password = scanner.nextLine();
+            return "AUTH " + username + " " + password;
+        }
     }
 
     private static String clientRegister() {
-        
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("\nEnter new username: ");
-        String newUsername = scanner.nextLine();
-        System.out.print("Enter new password: ");
-        String newPassword = scanner.nextLine();
-        return "REGISTER " + newUsername + " " + newPassword;
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("\nEnter new username: ");
+            String newUsername = scanner.nextLine();
+            System.out.print("Enter new password: ");
+            String newPassword = scanner.nextLine();
+            return "REGISTER " + newUsername + " " + newPassword;
+        }
     }
 
     private static String mainMenu() {
         int option;
         do {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("\nMain Menu\n Select an option:");
-            System.out.println("----------------------------");
-            System.out.println("1. Join Simple Lobby");
-            System.out.println("2. Join Ranked Lobby");
-            System.out.println("3. Check my points");
-            System.out.println("0. Exit");
-            System.out.print("Option: ");
-            option = scanner.nextInt();
+            try (Scanner scanner = new Scanner(System.in)) {
+                System.out.println("\nMain Menu\n Select an option:");
+                System.out.println("----------------------------");
+                System.out.println("1. Join Simple Lobby");
+                System.out.println("2. Join Ranked Lobby");
+                System.out.println("3. Check my points");
+                System.out.println("0. Exit");
+                System.out.print("Option: ");
+                option = scanner.nextInt();
+            }
             switch (option) {
                 case 1:
                     System.out.println("Join Simple Lobby selected");
@@ -161,9 +163,10 @@ public class Client {
     }
 
     private static String play() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter your guess: ");
-        String guess = scanner.nextLine();
-        return "PLAY " + token + " " + guess;
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.print("Enter your guess: ");
+            String guess = scanner.nextLine();
+            return "PLAY " + token + " " + guess;
+        }
     }
 }

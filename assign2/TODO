@@ -3,3 +3,4 @@ TODO
 - increment points
 - esquecer HELLO?
 - resource leaks, Client.java
+- leave lobby
