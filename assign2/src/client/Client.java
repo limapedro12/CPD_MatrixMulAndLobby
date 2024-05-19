@@ -38,7 +38,15 @@ public class Client {
                 default -> "exit";
             };
 
-            if (command.equals("exit")) return;
+            if (command.equals("exit")) {
+                try {
+                    stub.send("LOGOUT " + token);
+                } catch (Exception e) {
+                    continue;
+                }
+                stub.closeSocket();
+                return;
+            }
 
             String[] parts = command.split(" ");
             

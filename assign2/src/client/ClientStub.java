@@ -55,4 +55,12 @@ public class ClientStub {
 
         return message;
     }
+
+    public void closeSocket() {
+        try {
+            socket.close();
+        } catch (IOException e) {
+            System.out.println("Error closing socket: " + e.getMessage());
+        }
+    }
 }
