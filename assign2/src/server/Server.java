@@ -26,7 +26,7 @@ public class Server {
         int numPlayers = Integer.parseInt(args[1]);
 
         simpleLobby = new SimpleLobby(numPlayers);
-        rankLobby = new RankLobby(numPlayers, 100, true);
+        rankLobby = new RankLobby(numPlayers, 5, true);
 
         start(port);
         listen();
