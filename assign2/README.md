@@ -79,7 +79,7 @@ Se algum destes conjuntos contiver X jogadores, é iniciado um jogo com os mesmo
 
 ### Game.java
 
-## Client
+## Arquitetura do Cliente
 
 A classe Client é o ponto de entrada principal do client side. Ela gerencia a lógica de comunicação com o servidor e as transições de estado da aplicação Cliente. 
 ### Funcionalidades
