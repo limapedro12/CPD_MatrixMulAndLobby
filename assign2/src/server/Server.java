@@ -16,13 +16,17 @@ import server.lobby.*;
 public class Server {
     private static ServerSocket serverSocket;
 
-    private static SimpleLobby simpleLobby = new SimpleLobby(3);
-    private static RankLobby rankLobby = new RankLobby(3, 100, true);
+    private static SimpleLobby simpleLobby;
+    private static RankLobby rankLobby;
 
     public static void main(String[] args) {
         if (args.length < 1) return;
  
         int port = Integer.parseInt(args[0]);
+        int numPlayers = Integer.parseInt(args[1]);
+
+        simpleLobby = new SimpleLobby(numPlayers);
+        rankLobby = new RankLobby(numPlayers, 100, true);
 
         start(port);
         listen();
@@ -33,7 +37,7 @@ public class Server {
 
         System.out.println("Server is online on port " + port + "!");
 
-        new Thread(rankLobby).start();
+        Thread.ofVirtual().start(rankLobby);
     }
 
     private static void listen() {
