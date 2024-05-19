@@ -37,15 +37,22 @@ public class ClientState {
 
         } else if (initial == State.LOGIN) {
 
-            System.out.println(parts[0] + " " + parts[1] + " " + parts[2]);
+            System.out.println(parts[0] + " " + parts[1]);
 
             ret = switch (parts[0]) {
                 case "SUCCESS:" -> State.MAIN_MENU;
+                case "RESTORE:" -> switch(parts[1]) {
+                    case "SIMPLE_LOBBY." -> State.LOBBY;
+                    case "RANK_LOBBY." -> State.LOBBY;
+                    case "GAME_WAITING." -> State.IN_GAME_WAIT;
+                    case "GAME_GUESSING." -> State.IN_GAME_PLAY;
+                    default -> initial;
+                };
                 default -> initial;
             };
 
-            if (parts[0].equals("SUCCESS:"))
-                Client.token = parts[5];
+            if (parts[0].equals("SUCCESS:") || parts[0].equals("RESTORE:"))
+                Client.token = parts[4];
             
         } else if (initial == State.MAIN_MENU) {
 
@@ -81,6 +88,7 @@ public class ClientState {
 
             ret = switch (parts[0]) {
                 case "OK:" -> State.IN_GAME_WAIT;
+                case "GOODBYE:" -> State.MAIN_MENU;
                 default -> initial;
             };
 

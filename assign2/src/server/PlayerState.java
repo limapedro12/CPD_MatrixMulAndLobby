@@ -4,5 +4,6 @@ public enum PlayerState {
     IDLE,
     SIMPLE_LOBBY,
     RANK_LOBBY,
-    GAME
+    GAME_WAITING,
+    GAME_GUESSING
 }

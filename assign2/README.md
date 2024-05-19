@@ -23,13 +23,9 @@ Esta class representa o servidor. Inicialmente apenas existe uma thread que é r
 
 Caso o servidor receba uma das seguintes mensagens através de um dos sockets, executa a respetiva ação.
 
-`HELLO <token>`
-
-Ação: Restaura a sessão do jogador com base no token fornecido. Se o token for válido, o jogador receberá uma mensagem "Session restored.".
-
 `AUTH <username> <password>`
 
-Ação: Autentica o jogador com username e password fornecidos. Se a autenticação for bem-sucedida, o servidor enviará uma mensagem com o token do jogador, que este deve utilizar nas mensagens seguintes, para se identificar.
+Ação: Autentica o jogador com username e password fornecidos. Se a autenticação for bem-sucedida, o servidor enviará uma mensagem com o token do jogador, que este deve utilizar nas mensagens seguintes, para se identificar. Caso o servidor detete que o jogador se encontrava num lobby ou num jogo, envia essa informação ao cliente para que este consiga restaurar o estado correspondente.
 
 `REGISTER <username> <password>`
 

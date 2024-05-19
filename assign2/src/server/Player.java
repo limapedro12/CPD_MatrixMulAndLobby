@@ -21,7 +21,7 @@ public class Player {
 
     private static ReentrantLock databaseLock = new ReentrantLock();
 
-    public ReentrantLock lockPlayer = new ReentrantLock();
+    private ReentrantLock lockPlayer = new ReentrantLock();
 
     private String currentToken;
     private Socket currentSocket;
@@ -46,6 +46,7 @@ public class Player {
         Player player;
         String point = existsInDatabase(username, password);
         if (loggedPlayers.containsKey(new Pair<String, String>(username, password))) {
+            System.out.println("Encontrei");
             player = loggedPlayers.get(new Pair<String, String>(username, password));
         } 
         else if ( point != null) {

@@ -14,7 +14,7 @@ public class Game implements Runnable {
         this.players = players;
         for (Player player : players){
             guessDists.put(player, null);
-            player.setState(PlayerState.GAME);
+            player.setState(PlayerState.GAME_WAITING);
         }
         totalPlayers = players.size();
     }
@@ -54,9 +54,10 @@ public class Game implements Runnable {
 
                 while (it.hasNext()) {
                     Player player = it.next();
-                    int guess = -1;
+                    player.setState(PlayerState.GAME_GUESSING);
+                    int guess = -100;
 
-                    if (System.currentTimeMillis() - start >= 30000) {
+                    if (System.currentTimeMillis() - start >= 60000) {
                         player.send("GOODBYE: You were kicked of the game due to inactivity...");
                         player.setState(PlayerState.IDLE);
                         guessDists.remove(player);
@@ -68,7 +69,6 @@ public class Game implements Runnable {
 
                     String answer = player.receive();
                     if(answer != null){
-                        System.out.println("message: " + answer);
                         numGuesses++;
                         try {
                             guess = Integer.parseInt(answer);
@@ -76,8 +76,9 @@ public class Game implements Runnable {
                             player.send("OK: Guess registered");
                         } catch (Exception e) {
                             player.send("PLAY: Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
-                            guess = -1;
+                            guess = -100;
                         }
+                        player.setState(PlayerState.GAME_WAITING);
                         guessDists.put(player, Math.abs(guess-number));
                         it.remove();
                     }
@@ -96,14 +97,14 @@ public class Game implements Runnable {
                 guessDists.remove(last);
                 last.send("GOODBYE: You lost. +" + points + " points for you!");
                 players.remove(last);
-                 last.incrementPoints(points);
+                last.incrementPoints(points);
                 last.setState(PlayerState.IDLE);
             }
         }
         if(players.size() == 1){
             Player winner = players.get(0);
-            winner.send("GOODBYE: You won. Congratulations! +" + totalPlayers + "points for you!");
-             winner.incrementPoints(totalPlayers);
+            winner.send("GOODBYE: You won. Congratulations! +" + totalPlayers + " points for you!");
+            winner.incrementPoints(totalPlayers);
             winner.setState(PlayerState.IDLE);
             guessDists.clear();
             players.clear();

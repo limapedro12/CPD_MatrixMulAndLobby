@@ -39,10 +39,12 @@ public class Client {
             };
 
             if (command.equals("exit")) {
-                try {
-                    stub.send("LOGOUT " + token);
-                } catch (Exception e) {
-                    continue;
+                if (state == ClientState.State.AUTH_MENU) {
+                    try {
+                        stub.send("LOGOUT " + token);
+                    } catch (Exception e) {
+                        continue;
+                    }
                 }
                 stub.closeSocket();
                 return;
@@ -86,7 +88,6 @@ public class Client {
             System.out.println("----------------------------");
             System.out.println("1. Login");
             System.out.println("2. Register");
-            System.out.println("3. Continue a game");
             System.out.println("0. Exit");
             System.out.print("Option: ");
             option = scanner.nextInt();
@@ -98,10 +99,7 @@ public class Client {
                 case 2:
                     System.out.println("Register selected");
                     return "goto register";
-                   
-                case 3:
-                    //Por implementar o hello
-                    return "HELLO "; 
+                    
                 case 0:
                     System.out.println("Exiting...");
                     return "exit";

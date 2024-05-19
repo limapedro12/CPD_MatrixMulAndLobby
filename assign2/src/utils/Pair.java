@@ -10,6 +10,7 @@ public class Pair<T1, T2> {
         this.second = second;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof Pair) {
             Pair<?, ?> other = (Pair<?, ?>) obj;
@@ -18,6 +19,12 @@ public class Pair<T1, T2> {
         return false;
     }
 
+    @Override
+    public int hashCode() {
+        return this.first.hashCode() + this.second.hashCode();
+    }
+
+    @Override
     public String toString() {
         return "(" + first + ", " + second + ")";
     }

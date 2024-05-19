@@ -84,17 +84,6 @@ public class Server {
         Player player = null;
 
         switch (command) {
-            case "HELLO":   // HELLO <token>
-                if (parts.length != 2) {
-                    sendDirectMessage("ERROR: Token: Invalid token.", socket);
-                    break;
-                }
-                player = Player.getPlayerByToken(parts[1], socket);
-
-                if (player != null)
-                    player.send("SUCCESS: Session restored.");
-                else
-                    sendDirectMessage("ERROR: Please authenticate.", socket);
             case "AUTH":    // AUTH <username> <password>
                 if (parts.length != 3) {
                     sendDirectMessage("ERROR: Usage: AUTH <username> <password>", socket);
@@ -102,8 +91,12 @@ public class Server {
                 }
                 player = Player.login(parts[1], parts[2], socket);
 
-                if (player != null)
-                    player.send("SUCCESS: Authenticated successfully. TOKEN = " + player.getToken());
+                if (player != null) {
+                    PlayerState state = player.getState();
+                    if (state != PlayerState.IDLE)
+                        player.send("RESTORE: " + state + ". TOKEN = " + player.getToken());
+                    else player.send("SUCCESS: Authenticated. TOKEN = " + player.getToken());
+                }
                 else 
                     sendDirectMessage("ERROR: Account does not exist.", socket);
                 break;
@@ -190,7 +183,7 @@ public class Server {
                 }
                 player = Player.getPlayerByToken(parts[1], socket);
 
-                if (player != null && player.getState() == PlayerState.GAME)
+                if (player != null && player.getState() == PlayerState.GAME_GUESSING)
                     player.setLastMessage(parts[2]);
                 else
                     sendDirectMessage("ERROR: Token: Invalid token.", socket);
