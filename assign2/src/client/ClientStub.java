@@ -1,27 +1,34 @@
 package client;
 
 import java.net.*;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+
 import java.io.*;
  
-/**
- * This program demonstrates a simple TCP/IP socket client.
- *
- * @author www.codejava.net
- */
 public class ClientStub {
     Socket socket;
     
-    public void createSocket(String hostname, int port){
+    public void createSocket(String hostname, int port) throws UnknownHostException, IOException {
+        String working_dir = System.getProperty("user.dir");
+        String keyFilePath = working_dir + "/server/certificate/keystore.jks";
+        String keyPassword = "trabalhoCPD";
+
         try {
-            socket = new Socket(hostname, port);
+            System.setProperty("javax.net.ssl.trustStore", keyFilePath);
+            System.setProperty("javax.net.ssl.trustStorePassword", keyPassword);
+
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            socket = factory.createSocket(hostname, port);
         } catch (UnknownHostException ex) {
-            System.out.println("Server not found: " + ex.getMessage());
+            throw ex;
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
     }
 
-    public void send(String message) {
+    public void send(String message) throws IOException {
         try {
 
             OutputStream output = socket.getOutputStream();
@@ -29,11 +36,11 @@ public class ClientStub {
             writer.println(message);
  
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
     }
  
-    public String receive() {
+    public String receive() throws IOException {
         String message = "";
  
         try {
@@ -43,11 +50,9 @@ public class ClientStub {
             message = reader.readLine();
  
         } catch (IOException ex) {
-            System.out.println("I/O error: " + ex.getMessage());
+            throw ex;
         }
 
         return message;
     }
-
-    
 }
