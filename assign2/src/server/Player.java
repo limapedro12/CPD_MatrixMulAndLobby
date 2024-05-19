@@ -232,6 +232,60 @@ public class Player {
     }
 
     
+    public void incrementPoints(int pointIncrement) {
+        this.lockPlayer.lock();
+        this.points += pointIncrement;
+        this.lockPlayer.unlock();
+        databaseLock.lock();
+        try {
+            String workingDir = System.getProperty("user.dir");
+            File file = new File(workingDir + "/server/storage/players.csv");
+            File tempFile = new File(workingDir + "/server/storage/temp_players.csv");
+            
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+            
+            String currentLine;
+            boolean userFound = false;
+            
+            while ((currentLine = reader.readLine()) != null) {
+                String[] data = currentLine.split(",");
+                String storedUsername = data[0];
+                String storedPassword = data[1];
+                int points = Integer.parseInt(data[2]);
 
-    public void incrementPoints() {}
+                if (storedUsername.equals(username) && storedPassword.equals(password)) {
+                    points += pointIncrement;
+                    
+                    userFound = true;
+                }
+                
+                writer.write(storedUsername + "," + storedPassword + "," + points);
+                writer.newLine();
+            }
+            
+            reader.close();
+            writer.close();
+
+            if (!file.delete()) {
+                System.out.println("Error");
+                return;
+            }
+
+            if (!tempFile.renameTo(file)) {
+                System.out.println("Error");
+            }
+
+            if (!userFound) {
+                System.out.println("User not found or password incorrect.");
+            }
+            
+        } catch (FileNotFoundException e) {
+            System.out.println("Error: players.csv file not found.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            databaseLock.unlock();
+        }
+    }
 }

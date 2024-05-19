@@ -96,14 +96,14 @@ public class Game implements Runnable {
                 guessDists.remove(last);
                 last.send("GOODBYE: You lost. +" + points + " points for you!");
                 players.remove(last);
-                // last.incrementPoints(points);
+                 last.incrementPoints(points);
                 last.setState(PlayerState.IDLE);
             }
         }
         if(players.size() == 1){
             Player winner = players.get(0);
             winner.send("GOODBYE: You won. Congratulations! +" + totalPlayers + "points for you!");
-            // winner.incrementPoints(totalPlayers);
+             winner.incrementPoints(totalPlayers);
             winner.setState(PlayerState.IDLE);
             guessDists.clear();
             players.clear();
