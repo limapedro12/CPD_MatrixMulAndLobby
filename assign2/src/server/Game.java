@@ -29,7 +29,7 @@ public class Game implements Runnable {
     }
 
     private void play() {
-        notifyPlayers("Welcome!");
+        notifyPlayers("STARTING GAME");
 
         while (players.size() > 1) {
             notifyPlayers(players.size() + " players remaining. Please wait for your turn.");
@@ -38,13 +38,12 @@ public class Game implements Runnable {
 
             System.out.println("number: " + number);
 
-
             long start = System.currentTimeMillis();
 
             numGuesses = 0;
 
             for(Player player : players)
-                player.send(player.getUsername() + ", Place your guess as an integer between 0 and 100.");
+                player.send("PLAY: Place your guess as an integer between 0 and 100.");
 
             HashSet<Player> playersYetToGuess = new HashSet<>(players);
             for (Player player : players) 
@@ -58,7 +57,7 @@ public class Game implements Runnable {
                     int guess = -1;
 
                     if (System.currentTimeMillis() - start >= 30000) {
-                        player.send(player.getUsername() + ", You were kicked of the game due to inactivity...");
+                        player.send("GOODBYE: You were kicked of the game due to inactivity...");
                         player.setState(PlayerState.IDLE);
                         guessDists.remove(player);
                         it.remove();
@@ -73,8 +72,9 @@ public class Game implements Runnable {
                         try {
                             guess = Integer.parseInt(answer);
                             if (guess < 0 || guess > 100) throw new IllegalArgumentException();
+                            player.send("OK: Guess registered");
                         } catch (Exception e) {
-                            player.send(player.getUsername() + ", Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
+                            player.send("PLAY: Your guess is invalid. Please try again, making sure it is an integer between 0 and 100.");
                             guess = -1;
                         }
                         guessDists.put(player, Math.abs(guess-number));
@@ -93,7 +93,7 @@ public class Game implements Runnable {
                 Player last = entry.getKey();
                 int points = totalPlayers - players.size();
                 guessDists.remove(last);
-                last.send(last.getUsername() + ", You lost. +" + points + " points for you!");
+                last.send("GOODBYE: You lost. +" + points + " points for you!");
                 players.remove(last);
                 // last.incrementPoints(points);
                 last.setState(PlayerState.IDLE);
@@ -101,7 +101,7 @@ public class Game implements Runnable {
         }
         if(players.size() == 1){
             Player winner = players.get(0);
-            winner.send(winner.getUsername() + ", You won. Congratulations! +" + totalPlayers + "points for you!");
+            winner.send("GOODBYE: You won. Congratulations! +" + totalPlayers + "points for you!");
             // winner.incrementPoints(totalPlayers);
             winner.setState(PlayerState.IDLE);
             guessDists.clear();

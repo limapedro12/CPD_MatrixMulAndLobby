@@ -32,8 +32,9 @@ public class Client {
                 case ClientState.State.REGISTER -> clientRegister();
                 case ClientState.State.LOGIN -> clientLogin();
                 case ClientState.State.MAIN_MENU -> mainMenu();
-                case ClientState.State.LOBBY -> "";
-                case ClientState.State.IN_GAME -> "";
+                case ClientState.State.LOBBY -> "wait";
+                case ClientState.State.IN_GAME_WAIT -> "wait";
+                case ClientState.State.IN_GAME_PLAY -> play();
                 default -> "exit";
             };
 
@@ -45,6 +46,12 @@ public class Client {
 
             if (parts[0].equals("goto")) {
                 answer = command;
+            } else if (parts[0].equals("wait")) {
+                try {
+                    answer = stub.receive();
+                } catch (Exception e) {
+                    continue;
+                }
             } else {
                 try {
                     stub.send(command);
@@ -128,6 +135,7 @@ public class Client {
             System.out.println("----------------------------");
             System.out.println("1. Join Simple Lobby");
             System.out.println("2. Join Ranked Lobby");
+            System.out.println("3. Check my points");
             System.out.println("0. Exit");
             System.out.print("Option: ");
             option = scanner.nextInt();
@@ -138,6 +146,9 @@ public class Client {
                 case 2:
                     System.out.println("Join Ranked Lobby selected");
                     return "RANK " + token;
+                case 3:
+                    System.out.println("Check my points selected");
+                    return "POINTS " + token;
                 case 0:
                     System.out.println("Exiting...");
                     return "exit";
@@ -147,5 +158,12 @@ public class Client {
             }
         } while (option < -1 || option > 2);
         return "";
+    }
+
+    private static String play() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter your guess: ");
+        String guess = scanner.nextLine();
+        return "PLAY " + token + " " + guess;
     }
 }

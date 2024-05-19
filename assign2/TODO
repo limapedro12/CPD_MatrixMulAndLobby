@@ -1,4 +1,5 @@
 TODO
 
-- App cliente - Janu
-- SSL - Lima
+- increment points
+- esquecer HELLO?
+- resource leaks, Client.java

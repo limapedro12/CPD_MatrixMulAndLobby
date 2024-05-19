@@ -114,7 +114,7 @@ public class Server {
                 if (registered == false) 
                     sendDirectMessage("ERROR: Account already exists.", socket);
                 else 
-                    sendDirectMessage("Registered succesfully. Please log in.",socket);
+                    sendDirectMessage("SUCCESS: Registered succesfully. Please log in.", socket);
                 break;
             case "SIMPLE":  // SIMPLE <token>
                 if (parts.length != 2) {

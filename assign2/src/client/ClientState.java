@@ -8,7 +8,8 @@ public class ClientState {
         LOGIN,
         MAIN_MENU,
         LOBBY,
-        IN_GAME
+        IN_GAME_WAIT,
+        IN_GAME_PLAY
     }
 
     public static State transition(State initial, String input) {
@@ -56,7 +57,33 @@ public class ClientState {
             };
             
         } else if (initial == State.LOBBY) {
-        } else if (initial == State.IN_GAME) {
+
+            System.out.println(input);
+
+            ret = switch (parts[0]) {
+                case "STARTING" -> State.IN_GAME_WAIT;
+                default -> initial;
+            };
+
+        } else if (initial == State.IN_GAME_WAIT) {
+
+            System.out.println(input);
+
+            ret = switch (parts[0]) {
+                case "PLAY:" -> State.IN_GAME_PLAY;
+                case "GOODBYE:" -> State.MAIN_MENU;
+                default -> initial;
+            };
+
+        } else if (initial == State.IN_GAME_PLAY) {
+
+            System.out.println(input);
+
+            ret = switch (parts[0]) {
+                case "OK:" -> State.IN_GAME_WAIT;
+                default -> initial;
+            };
+
         }
 
         return ret;
