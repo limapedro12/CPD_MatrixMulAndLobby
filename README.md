@@ -6,6 +6,8 @@ Assignment 1 uses the OpenMP, a C++ API for parallel computing, to do matrix mul
 
 Assignment 2 is a game lobby implementation that allows multiples remote players to connect and automatically creates new games between players.
 
+For more information, please read the documentation inside each folder.
+
 Group members:
 
 1. António Augusto de Sousa (up202000705@up.pt)
